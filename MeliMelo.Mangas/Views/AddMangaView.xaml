@@ -1,0 +1,41 @@
+﻿<Controls:MetroWindow
+    x:Class="MeliMelo.Views.AddMangaView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:local="clr-namespace:MeliMelo.Views"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:cal="http://www.caliburnproject.org"
+    mc:Ignorable="d"
+    BorderThickness="0"
+    GlowBrush="Black"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    Height="160"
+    Width="450"
+>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Name" />
+        <TextBox x:Name="MangaName" Grid.Column="1" Grid.ColumnSpan="2" />
+
+        <Label Content="Link" Grid.Row="1" />
+        <TextBox x:Name="MangaLink" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" />
+
+        <Button x:Name="Cancel" Content="Cancel" Grid.Row="2" Grid.ColumnSpan="2" />
+        <Button x:Name="Save" Content="Save" Grid.Row="2" Grid.Column="2" />
+    </Grid>
+</Controls:MetroWindow>

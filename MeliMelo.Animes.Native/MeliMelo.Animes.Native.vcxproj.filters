@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{c852bfa8-5d4a-417d-a9a4-6b433baf8d78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\meli_melo">
+      <UniqueIdentifier>{c8328f15-3b29-4475-8e9e-c70b57b551e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\meli_melo\animes">
+      <UniqueIdentifier>{6e7b44e8-41cf-458b-bb79-aa10680bd819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\anitomy">
+      <UniqueIdentifier>{8940f5a3-7a76-4e6f-9520-40b4781d9532}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\meli_melo\animes\anime.cc">
+      <Filter>src\meli_melo\animes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\meli_melo\animes\reader.cpp">
+      <Filter>src\meli_melo\animes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\anitomy.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\element.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\keyword.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\parser.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\parser_helper.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\parser_number.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\string.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\token.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anitomy\tokenizer.cpp">
+      <Filter>src\anitomy</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\meli_melo\animes\anime.h">
+      <Filter>src\meli_melo\animes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\meli_melo\animes\marshal.h">
+      <Filter>src\meli_melo\animes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\meli_melo\animes\reader.h">
+      <Filter>src\meli_melo\animes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\anitomy.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\element.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\keyword.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\options.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\parser.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\string.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\token.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anitomy\tokenizer.h">
+      <Filter>src\anitomy</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LICENSE" />
+  </ItemGroup>
+</Project>
