@@ -86,6 +86,7 @@
     <Compile Include="Database\IDatabase.cs" />
     <Compile Include="DataEventArgs.cs" />
     <Compile Include="HttpHelper.cs" />
+    <Compile Include="IoHelper.cs" />
     <Compile Include="JsonConverterBase.cs" />
     <Compile Include="Log\ILog.cs" />
     <Compile Include="Log\LogImpl.cs" />

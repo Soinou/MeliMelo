@@ -1,6 +1,7 @@
 ﻿using MeliMelo.Core.Configuration;
 using MeliMelo.Core.Configuration.Json;
 using MeliMelo.Core.Configuration.Values;
+using MeliMelo.Utils;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -110,7 +111,7 @@ namespace MeliMelo.Impl
         /// </summary>
         public void Save()
         {
-            File.WriteAllText(file_name_, JsonConvert.SerializeObject(values_,
+            IoHelper.Write(file_name_, JsonConvert.SerializeObject(values_,
                 new IValueConverter()));
         }
 
@@ -141,7 +142,7 @@ namespace MeliMelo.Impl
         {
             if (File.Exists(file_name_))
             {
-                string data = File.ReadAllText(file_name_);
+                string data = IoHelper.Read(file_name_);
 
                 values_ = JsonConvert.DeserializeObject<Dictionary<string, IValue>>(data,
                     new IValueConverter());

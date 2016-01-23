@@ -122,8 +122,8 @@ namespace MeliMelo.Core.Configuration.Values
                     && value % step_ == 0)
                 {
                     value_ = value;
-                    if (ValueChange != null)
-                        ValueChange(null, new DataEventArgs<int>(value_));
+                    if (ValueChanged != null)
+                        ValueChanged(null, new DataEventArgs<int>(value_));
                 }
             }
         }
@@ -159,7 +159,7 @@ namespace MeliMelo.Core.Configuration.Values
         /// <summary>
         /// Triggered when the value is changed
         /// </summary>
-        public event EventHandler<DataEventArgs<int>> ValueChange;
+        public event EventHandler<DataEventArgs<int>> ValueChanged;
 
         /// <summary>
         /// Maximum value

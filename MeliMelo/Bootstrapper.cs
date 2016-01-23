@@ -51,7 +51,7 @@ namespace MeliMelo
         protected override void RegisterServices()
         {
             // Create managers
-            configuration_ = new ConfigurationManagerImpl("MeliMelo.db");
+            configuration_ = new ConfigurationManagerImpl(@"..\data\MeliMelo.db");
             keyboard_ = new KeyboardManagerImpl();
             plugins_ = new PluginManagerImpl();
             tasks_ = new TaskManagerImpl();

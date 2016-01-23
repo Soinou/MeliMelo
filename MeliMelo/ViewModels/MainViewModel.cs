@@ -29,6 +29,7 @@ namespace MeliMelo.ViewModels
             tasks_ = tasks;
             windows_ = windows;
             transition_ = TransitionType.Right;
+            showing_tasks_ = false;
 
             ShowTasks();
         }
@@ -58,7 +59,9 @@ namespace MeliMelo.ViewModels
             {
                 bool restart = false;
 
-                using (var manager = new UpdateManager(Settings.Default.kProjectURL))
+                string url = Settings.Default.kProjectURL;
+
+                using (var manager = await UpdateManager.GitHubUpdateManager(url))
                 {
                     var update_info = await manager.CheckForUpdate();
                     if (update_info != null && update_info.ReleasesToApply.Count > 0)
@@ -87,8 +90,12 @@ namespace MeliMelo.ViewModels
         /// </summary>
         public void ShowConfiguration()
         {
-            Transition = TransitionType.Left;
-            ActivateItem(new ConfigurationViewModel(configuration_));
+            if (showing_tasks_)
+            {
+                Transition = TransitionType.Left;
+                ActivateItem(new ConfigurationViewModel(configuration_));
+                showing_tasks_ = false;
+            }
         }
 
         /// <summary>
@@ -96,8 +103,12 @@ namespace MeliMelo.ViewModels
         /// </summary>
         public void ShowTasks()
         {
-            Transition = TransitionType.Right;
-            ActivateItem(new TasksViewModel(tasks_));
+            if (!showing_tasks_)
+            {
+                Transition = TransitionType.Right;
+                ActivateItem(new TasksViewModel(tasks_));
+                showing_tasks_ = true;
+            }
         }
 
         /// <summary>
@@ -113,6 +124,7 @@ namespace MeliMelo.ViewModels
         {
             if (Close != null)
                 Close(this, new DataEventArgs<bool>(close));
+
             base.OnDeactivate(close);
         }
 
@@ -120,6 +132,11 @@ namespace MeliMelo.ViewModels
         /// Configuration manager
         /// </summary>
         protected IConfigurationManager configuration_;
+
+        /// <summary>
+        /// If we are showing the tasks page or the configuration page
+        /// </summary>
+        protected bool showing_tasks_;
 
         /// <summary>
         /// Task manager

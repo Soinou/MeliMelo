@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.IO;
 
 namespace MeliMelo.Utils.Log
 {
@@ -32,7 +31,7 @@ namespace MeliMelo.Utils.Log
         /// <summary>
         /// Flushes the write operations of the logger
         /// </summary>
-        public async void Flush()
+        public void Flush()
         {
             if (!writing_)
             {
@@ -45,18 +44,15 @@ namespace MeliMelo.Utils.Log
                     string long_date = date.ToString("yyyy-MM-ddTHH:mm:ss");
                     string file_name = @"..\data\logs\" + name_ + "_" + short_date + ".log";
 
-                    using (StreamWriter writer = new StreamWriter(file_name, true))
+                    while (messages_.Count > 0)
                     {
-                        while (messages_.Count > 0)
+                        string message = null;
+
+                        if (messages_.TryDequeue(out message))
                         {
-                            string message = null;
+                            string long_message = "[" + long_date + "]" + message;
 
-                            if (messages_.TryDequeue(out message))
-                            {
-                                string long_message = "[" + long_date + "]" + message;
-
-                                await writer.WriteAsync(long_message + Environment.NewLine);
-                            }
+                            IoHelper.Append(file_name, long_message + Environment.NewLine);
                         }
                     }
                 }

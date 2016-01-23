@@ -10,6 +10,9 @@ namespace MeliMelo.Screen
             temperature_ = temperature;
             interval_ = interval;
 
+            temperature_.ValueChanged += TemperatureValueChanged;
+            interval_.ValueChanged += IntervalValueChanged;
+
             Interval = interval_.Value;
         }
 
@@ -26,6 +29,11 @@ namespace MeliMelo.Screen
             Temperature.Set(temperature_.Value);
         }
 
+        protected void IntervalValueChanged(object sender, Utils.DataEventArgs<int> e)
+        {
+            Interval = e.Data;
+        }
+
         protected override void OnStart()
         {
             Temperature.Set(temperature_.Value);
@@ -36,7 +44,13 @@ namespace MeliMelo.Screen
             Temperature.Reset();
         }
 
+        protected void TemperatureValueChanged(object sender, Utils.DataEventArgs<int> e)
+        {
+            Temperature.Set(e.Data);
+        }
+
         protected IntegerValue interval_;
+
         protected IntegerValue temperature_;
     }
 }

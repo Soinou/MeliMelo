@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MeliMelo.Utils
 {
@@ -11,9 +10,6 @@ namespace MeliMelo.Utils
         {
             file_name_ = file_name;
             items_ = null;
-
-            if (!File.Exists(file_name_))
-                File.Create(file_name_);
 
             Load();
         }
@@ -47,12 +43,12 @@ namespace MeliMelo.Utils
 
         public void Save()
         {
-            File.WriteAllText(file_name_, JsonConvert.SerializeObject(items_));
+            IoHelper.Write(file_name_, JsonConvert.SerializeObject(items_));
         }
 
         protected void Load()
         {
-            items_ = JsonConvert.DeserializeObject<ICollection<T>>(File.ReadAllText(file_name_));
+            items_ = JsonConvert.DeserializeObject<ICollection<T>>(IoHelper.Read(file_name_));
 
             if (items_ == null)
                 items_ = new LinkedList<T>();

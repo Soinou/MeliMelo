@@ -2,7 +2,7 @@
 using MeliMelo.Utils.Log;
 using Squirrel;
 using System;
-using System.IO;
+using System.Text;
 using System.Threading;
 using System.Windows;
 
@@ -82,47 +82,54 @@ namespace MeliMelo
         /// <param name="e">Event args</param>
         protected override async void OnStartup(StartupEventArgs e)
         {
-            if (e.Args.Length > 0 && e.Args[0] == "--debug")
-                debug_ = true;
-
-            if (!debug_)
+            try
             {
-                string url = Settings.Default.kProjectURL;
+                if (e.Args.Length > 0 && e.Args[0] == "--debug")
+                    debug_ = true;
 
-                using (var manager = await UpdateManager.GitHubUpdateManager(url))
+                if (!debug_)
                 {
-                    SquirrelAwareApp.HandleEvents(onFirstRun: async () =>
+                    string url = Settings.Default.kProjectURL;
+
+                    using (var manager = await UpdateManager.GitHubUpdateManager(url))
                     {
-                        manager.CreateShortcutsForExecutable("GimmeMyManga.exe",
-                            ShortcutLocation.Desktop | ShortcutLocation.Startup, false);
+                        SquirrelAwareApp.HandleEvents(onFirstRun: async () =>
+                        {
+                            manager.CreateShortcutsForExecutable("MeliMelo.exe",
+                                ShortcutLocation.Desktop | ShortcutLocation.Startup, false);
 
-                        await manager.CreateUninstallerRegistryEntry();
-                    });
+                            await manager.CreateUninstallerRegistryEntry();
+                        });
+                    }
                 }
-            }
 
-            string mutex_name = "MeliMelo-2218c0a3-7447-46c7-ad37-87bc73e36bef"
-                + (debug_ ? "-debug" : "");
+                string mutex_name = "MeliMelo-2218c0a3-7447-46c7-ad37-87bc73e36bef";
 
-            bool mutex_created = false;
-            mutex_ = new Mutex(true, mutex_name, out mutex_created);
+                bool mutex_created = false;
+                mutex_ = new Mutex(true, mutex_name, out mutex_created);
 
-            if (!mutex_created)
-            {
-                mutex_ = null;
-                Current.Shutdown();
-            }
-            else
-            {
-                LogManager.Instance.Start();
-
-                if (!Directory.Exists(@"..\data"))
+                if (!mutex_created)
                 {
-                    Directory.CreateDirectory(@"..\data");
-                    Directory.CreateDirectory(@"..\data\logs");
+                    mutex_ = null;
+                    Current.Shutdown();
                 }
+                else
+                {
+                    LogManager.Instance.Start();
 
-                base.OnStartup(e);
+                    base.OnStartup(e);
+                }
+            }
+            catch (Exception ex)
+            {
+                StringBuilder builder = new StringBuilder();
+
+                builder.Append("Seems like an error has occured: ");
+                builder.AppendLine(ex.Message);
+                builder.AppendLine("Stack Trace:");
+                builder.AppendLine(ex.StackTrace);
+
+                MessageBox.Show(builder.ToString(), "Whoops!");
             }
         }
 
