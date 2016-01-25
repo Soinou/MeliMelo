@@ -29,7 +29,7 @@
     <ClCompile Include="src\anitomy\token.cpp" />
     <ClCompile Include="src\anitomy\tokenizer.cpp" />
     <ClCompile Include="src\meli_melo\animes\anime.cc" />
-    <ClCompile Include="src\meli_melo\animes\reader.cpp" />
+    <ClCompile Include="src\meli_melo\animes\reader.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\anitomy\anitomy.h" />

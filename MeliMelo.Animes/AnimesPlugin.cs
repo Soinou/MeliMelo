@@ -1,5 +1,6 @@
 ﻿using MeliMelo.Core.Configuration.Values;
 using MeliMelo.Core.Plugins;
+using MeliMelo.ViewModels;
 
 namespace MeliMelo.Animes
 {
@@ -27,7 +28,29 @@ namespace MeliMelo.Animes
             PathValue input = Configuration.GetPath("Animes.Input", "");
             PathValue output = Configuration.GetPath("Animes.Output", "");
 
-            Tasks.AddAutoTask(new AnimesTask(input, output));
+            task_ = new AnimesTask(input, output);
+
+            Tasks.AddAutoTask(task_);
+
+            TrayIcon.AddItem(kAnimes);
+
+            TrayIcon.ItemClicked += TrayIconItemClicked;
         }
+
+        protected void TrayIconItemClicked(object sender, Utils.DataEventArgs<string> e)
+        {
+            if (e.Data == kAnimes & !open_)
+            {
+                open_ = true;
+                Windows.ShowDialog(new SortingQueueViewModel(task_.Queue));
+                open_ = false;
+            }
+        }
+
+        protected const string kAnimes = "Animes";
+
+        protected bool open_;
+
+        protected AnimesTask task_;
     }
 }

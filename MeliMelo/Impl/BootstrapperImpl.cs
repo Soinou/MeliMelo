@@ -84,6 +84,7 @@ namespace MeliMelo.Impl
             var assemblies = base.SelectAssemblies().ToList();
 
             assemblies.Add(typeof(MangasViewModel).GetTypeInfo().Assembly);
+            assemblies.Add(typeof(SortingQueueViewModel).GetTypeInfo().Assembly);
 
             return assemblies;
         }

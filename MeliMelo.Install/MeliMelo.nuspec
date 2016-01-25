@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>MeliMelo</id>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <title>MeliMelo</title>
         <authors>Abricot Soinou</authors>
         <licenseUrl>https://github.com/Soinou/MeliMelo/blob/master/LICENSE</licenseUrl>
@@ -18,7 +18,6 @@
         <file src="..\MeliMelo\bin\x86\Release\Caliburn.Micro.Platform.dll" target="lib\net45\Caliburn.Micro.Platform.dll" />
         <file src="..\MeliMelo\bin\x86\Release\DeltaCompressionDotNet.dll" target="lib\net45\DeltaCompressionDotNet.dll" />
         <file src="..\MeliMelo\bin\x86\Release\DeltaCompressionDotNet.MsDelta.dll" target="lib\net45\DeltaCompressionDotNet.MsDelta.dll" />
-        <file src="..\MeliMelo\bin\x86\Release\DeltaCompressionDotNet.PatchApi.dll" target="lib\net45\DeltaCompressionDotNet.PatchApi.dll" />
         <file src="..\MeliMelo\bin\x86\Release\ICSharpCode.SharpZipLib.dll" target="lib\net45\ICSharpCode.SharpZipLib.dll" />
         <file src="..\MeliMelo\bin\x86\Release\MahApps.Metro.dll" target="lib\net45\MahApps.Metro.dll" />
         <file src="..\MeliMelo\bin\x86\Release\MeliMelo.Animes.dll" target="lib\net45\MeliMelo.Animes.dll" />

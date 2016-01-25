@@ -95,7 +95,7 @@ namespace MeliMelo.Mangas
         /// <summary>
         /// Triggered when at least one manga has received an update
         /// </summary>
-        public event EventHandler<DataEventArgs<uint>> MangaUpdate;
+        public event EventHandler<DataEventArgs<uint>> MangaUpdated;
 
         /// <summary>
         /// Disposes of the resource
@@ -181,8 +181,8 @@ namespace MeliMelo.Mangas
                 count += (uint)manga.Chapters.Count(chapter => !chapter.IsRead);
             }
 
-            if (count > 0 && MangaUpdate != null)
-                MangaUpdate(this, new DataEventArgs<uint>(count));
+            if (count > 0 && MangaUpdated != null)
+                MangaUpdated(this, new DataEventArgs<uint>(count));
 
             database_.Save();
         }

@@ -1,4 +1,5 @@
-﻿using MeliMelo.Core.Configuration.Values;
+﻿using MeliMelo.Animes.Core;
+using MeliMelo.Core.Configuration.Values;
 using MeliMelo.Core.Tasks;
 using MeliMelo.Utils.Log;
 using System;
@@ -10,7 +11,7 @@ namespace MeliMelo.Animes
     /// <summary>
     /// Represents the animes task
     /// </summary>
-    public class AnimesTask : IAutoTask
+    public class AnimesTask : TimedTask
     {
         /// <summary>
         /// Creates a new AnimesTask
@@ -19,17 +20,18 @@ namespace MeliMelo.Animes
         /// <param name="output">Output configuration value</param>
         public AnimesTask(PathValue input, PathValue output)
         {
-            log_ = LogManager.Instance.Get("MeliMelo.Animes");
             input_ = input;
+            log_ = LogManager.Instance.Get("MeliMelo.Animes");
             output_ = output;
-            watchers_ = new List<FileSystemWatcher>();
+            queue_ = new SortingQueue();
             reader_ = new Reader();
+            watchers_ = new List<FileSystemWatcher>();
         }
 
         /// <summary>
         /// Gets the task name
         /// </summary>
-        public string Name
+        public override string Name
         {
             get
             {
@@ -38,28 +40,59 @@ namespace MeliMelo.Animes
         }
 
         /// <summary>
-        /// Gets if the task is running
+        /// Gets the sorting queue of this task
         /// </summary>
-        public bool Running
+        public SortingQueue Queue
         {
             get
             {
-                return running_;
+                return queue_;
+            }
+        }
+
+        public override void Run()
+        {
+            queue_.Run();
+        }
+
+        /// <summary>
+        /// On changed event
+        /// </summary>
+        /// <param name="source">the source</param>
+        /// <param name="e">the arguments</param>
+        protected void OnChanged(object source, FileSystemEventArgs e)
+        {
+            // Get the event informations
+            string path = e.FullPath;
+            string name = e.Name;
+
+            try
+            {
+                // If the event is a created event and the path we got is a file
+                if (e.ChangeType == WatcherChangeTypes.Created && File.GetAttributes(path)
+                    != FileAttributes.Directory)
+                    // Try to sort the file
+                    Sort(path, name);
+            }
+            catch (Exception)
+            {
+                // Ignore exceptions, the file doesn't exist or something else, so we just don't
+                // send it
             }
         }
 
         /// <summary>
-        /// Runs the task
+        /// Called on error
         /// </summary>
-        public void Run()
+        /// <param name="sender">the sender</param>
+        /// <param name="e">the arguments</param>
+        protected void OnError(object sender, ErrorEventArgs e)
         {
-            // Nothing to do here
+            log_.Error("SortService (OnError)", "An error has occured: "
+                + e.GetException().Message);
         }
 
-        /// <summary>
-        /// Starts the watcher
-        /// </summary>
-        public void Start()
+        protected override void OnStart()
         {
             if (!running_)
             {
@@ -68,14 +101,14 @@ namespace MeliMelo.Animes
                 string input = input_.Value;
                 string output = output_.Value;
 
-                // If we have some folders to scan
+                // If we have a folder to scan
                 if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(output))
                 {
                     // If the directory exists
                     if (Directory.Exists(input))
                     {
                         // Before watching anything, scan the folder
-                        Scan(input);
+                        Scan();
 
                         log_.Info("SortService (Start)", "Setting up watcher for folder " + input);
 
@@ -102,17 +135,16 @@ namespace MeliMelo.Animes
                         running_ = true;
                     }
                     else
-                        log_.Error("SortService (Start)", "Could not start sort service: no folder to sort");
+                        log_.Error("SortService (Start)", "Could not start sort service:"
+                            + " no folder to sort");
                 }
                 else
-                    log_.Error("SortService (Start)", "Could not start sort service: no folder to sort");
+                    log_.Error("SortService (Start)", "Could not start sort service:"
+                        + " no folder to sort");
             }
         }
 
-        /// <summary>
-        /// Stops the listener
-        /// </summary>
-        public void Stop()
+        protected override void OnStop()
         {
             if (running_)
             {
@@ -121,7 +153,8 @@ namespace MeliMelo.Animes
                 // For each watcher we have
                 foreach (FileSystemWatcher watcher in watchers_)
                 {
-                    log_.Info("SortService (Stop)", "Stopping watcher for folder " + watcher.Path + "...");
+                    log_.Info("SortService (Stop)", "Stopping watcher for folder " + watcher.Path
+                        + "...");
 
                     // Stop to listen to events
                     watcher.EnableRaisingEvents = false;
@@ -129,7 +162,8 @@ namespace MeliMelo.Animes
                     // Dispose of everything
                     watcher.Dispose();
 
-                    log_.Info("SortService (Stop)", "Watcher for folder " + watcher.Path + " stopped");
+                    log_.Info("SortService (Stop)", "Watcher for folder " + watcher.Path +
+                        " stopped");
                 }
 
                 // Clear our watchers
@@ -142,71 +176,31 @@ namespace MeliMelo.Animes
         }
 
         /// <summary>
-        /// Node found event, triggered when a new node is found
+        /// Scans the unsorted folder at startup or on task run
         /// </summary>
-        public event EventHandler<SortNode> NodeFound;
-
-        /// <summary>
-        /// On changed event
-        /// </summary>
-        /// <param name="source">the source</param>
-        /// <param name="e">the arguments</param>
-        protected void OnChanged(object source, FileSystemEventArgs e)
+        protected void Scan()
         {
-            // Get the event informations
-            string path = e.FullPath;
-            string name = e.Name;
-
-            try
-            {
-                // If the event is a created event and the path we got is a file
-                if (e.ChangeType == WatcherChangeTypes.Created && File.GetAttributes(path) != FileAttributes.Directory)
-                    // Send a node to the listeners
-                    SendNode(path, name);
-            }
-            catch (Exception)
-            {
-                // Ignore exceptions, the file doesn't exist or something else, so we just don't
-                // send it
-            }
-        }
-
-        /// <summary>
-        /// Called on error
-        /// </summary>
-        /// <param name="sender">the sender</param>
-        /// <param name="e">the arguments</param>
-        protected void OnError(object sender, ErrorEventArgs e)
-        {
-            log_.Error("SortService (OnError)", "An error has occured: " + e.GetException().Message);
-        }
-
-        /// <summary>
-        /// Scans the unsorted folder at startup
-        /// </summary>
-        protected void Scan(string folder)
-        {
-            log_.Info("SortService (Scan)", "Scanning folder " + folder + "...");
+            log_.Info("SortService (Scan)", "Scanning folder " + input_.Value + "...");
 
             // For each file in the unsorted directory
-            foreach (string path in Directory.GetFiles(folder))
+            foreach (string path in Directory.GetFiles(input_.Value))
             {
                 // Get the file name
                 string name = Path.GetFileName(path);
 
-                // Send a node to the listeners
-                SendNode(path, name);
+                // Sort the file
+                Sort(path, name);
             }
 
-            log_.Info("SortService (Scan)", "Folder " + folder + " scanned");
+            log_.Info("SortService (Scan)", "Folder " + input_.Value + " scanned");
         }
 
         /// <summary>
-        /// Sends a node to the listeners
+        /// Sorts the file given
         /// </summary>
         /// <param name="path">the file path</param>
         /// <param name="name">the file name</param>
-        protected void SendNode(string path, string name)
+        protected void Sort(string path, string name)
         {
             // Get an anime from the file name
             Anime anime = reader_.Read(name);
@@ -222,14 +216,12 @@ namespace MeliMelo.Animes
                     // Create it
                     Directory.CreateDirectory(outputDirectory);
 
-                // Create a new node
-                SortNode node = new SortNode(anime, path, Path.Combine(outputDirectory, name));
-
-                // Trigger the node found event
-                NodeFound(this, node);
+                // Create a new sort node and queue it
+                queue_.Enqueue(new SortNode(anime, path, Path.Combine(outputDirectory, name)));
             }
             else
-                log_.Error("SortService(SendNode)", "Could not sort file " + name + ": malformatted name");
+                log_.Error("SortService (TrySort)", "Could not sort file " + name
+                    + ": malformatted name");
         }
 
         /// <summary>
@@ -246,6 +238,11 @@ namespace MeliMelo.Animes
         /// Output folder
         /// </summary>
         protected PathValue output_;
+
+        /// <summary>
+        /// Sorting queue
+        /// </summary>
+        protected SortingQueue queue_;
 
         /// <summary>
         /// The anitomy reader

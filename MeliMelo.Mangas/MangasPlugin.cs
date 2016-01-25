@@ -35,11 +35,18 @@ namespace MeliMelo.Mangas
         {
             task_ = new MangasTask();
 
+            task_.MangaUpdated += TaskMangaUpdated;
+
             Tasks.AddAutoTask(task_);
 
             TrayIcon.AddItem(kMangas);
 
             TrayIcon.ItemClicked += TrayIconItemClicked;
+        }
+
+        protected void TaskMangaUpdated(object sender, Utils.DataEventArgs<uint> e)
+        {
+            TrayIcon.Notify("MeliMelo.Mangas", e.Data + " new chapters available");
         }
 
         protected void TrayIconItemClicked(object sender, Utils.DataEventArgs<string> e)
@@ -53,7 +60,9 @@ namespace MeliMelo.Mangas
         }
 
         protected const string kMangas = "Mangas";
+
         protected bool open_;
+
         protected MangasTask task_;
     }
 }

@@ -33,8 +33,8 @@ namespace MeliMelo
         bool Anime::IsValid()
         {
             // If the episode number is empty or the release group is empty, the anime is not valid
-            return elements_->get(anitomy::kElementEpisodeNumber).empty()
-                || elements_->get(anitomy::kElementReleaseGroup).empty();
+            return !(elements_->get(anitomy::kElementEpisodeNumber).empty()
+                     || elements_->get(anitomy::kElementReleaseGroup).empty());
         }
 
         System::String^ Anime::AnimeSeason()
