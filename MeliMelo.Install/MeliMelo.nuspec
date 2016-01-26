@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>MeliMelo</id>
-    <version>1.2.0</version>
+    <version>1.0.0</version>
     <title>MeliMelo</title>
     <authors>Abricot Soinou</authors>
     <licenseUrl>https://github.com/Soinou/MeliMelo/blob/master/LICENSE</licenseUrl>

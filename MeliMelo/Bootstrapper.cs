@@ -101,7 +101,7 @@ namespace MeliMelo
             if (!mutex_created)
             {
                 mutex_ = null;
-                System.Windows.Application.Current.Shutdown(1);
+                Application.Current.Shutdown(1);
             }
             else if (!App.Debug)
             {
