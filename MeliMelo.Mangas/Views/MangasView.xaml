@@ -16,6 +16,11 @@
     Height="600"
     Width="800"
 >
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Content="update" cal:Message.Attach="Update" />
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50" />
@@ -33,6 +38,6 @@
         <ComboBox x:Name="Mangas" DisplayMemberPath="Name" Grid.Column="1" />
         <Button x:Name="Add" Content="Add" Grid.Column="2" />
         <Button x:Name="Delete" Content="Delete" Grid.Column="3" />
-        <ContentControl x:Name="Manga" Margin="2.5" Padding="0" Grid.Row="1" Grid.ColumnSpan="4" />
+        <ContentControl x:Name="SelectedManga" Margin="2.5" Padding="0" Grid.Row="1" Grid.ColumnSpan="4" />
     </Grid>
 </Controls:MetroWindow>

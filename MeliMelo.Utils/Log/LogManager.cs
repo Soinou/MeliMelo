@@ -56,6 +56,20 @@ namespace MeliMelo.Utils.Log
         {
             if (timer_.Enabled)
                 timer_.Stop();
+
+            foreach (LogImpl log in loggers_.Values)
+                log.Flush();
+        }
+
+        /// <summary>
+        /// Creates a new LogManager
+        /// </summary>
+        protected LogManager()
+        {
+            loggers_ = new Dictionary<string, LogImpl>();
+            timer_ = new Timer();
+            timer_.Interval = 1000;
+            timer_.Elapsed += OnTimerElapsed;
         }
 
         /// <summary>
@@ -83,16 +97,5 @@ namespace MeliMelo.Utils.Log
         /// Write timer
         /// </summary>
         protected Timer timer_;
-
-        /// <summary>
-        /// Creates a new LogManager
-        /// </summary>
-        private LogManager()
-        {
-            loggers_ = new Dictionary<string, LogImpl>();
-            timer_ = new Timer();
-            timer_.Interval = 1000;
-            timer_.Elapsed += OnTimerElapsed;
-        }
     }
 }

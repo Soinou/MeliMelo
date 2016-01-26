@@ -16,23 +16,13 @@ namespace MeliMelo.ViewModels
         /// <param name="task">Mangas task</param>
         public MangasViewModel(IWindowManager window_manager, MangasTask task)
         {
-            window_manager_ = window_manager;
-            manga_updater_ = task;
-            mangas_ = CollectionViewSource.GetDefaultView(manga_updater_.Mangas);
-            mangas_.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            task_ = task;
+            mangas_ = new BindableCollection<MangaViewModel>();
             selected_manga_ = null;
-            manga_ = null;
-        }
+            window_manager_ = window_manager;
 
-        /// <summary>
-        /// Gets the shown manga view model
-        /// </summary>
-        public MangaViewModel Manga
-        {
-            get
-            {
-                return manga_;
-            }
+            foreach (Manga manga in task_.Mangas)
+                mangas_.Add(new MangaViewModel(task_, manga));
         }
 
         /// <summary>
@@ -42,14 +32,19 @@ namespace MeliMelo.ViewModels
         {
             get
             {
-                return mangas_;
+                var mangas = CollectionViewSource.GetDefaultView(mangas_);
+
+                mangas.SortDescriptions.Add(new SortDescription("Name",
+                    ListSortDirection.Ascending));
+
+                return mangas;
             }
         }
 
         /// <summary>
         /// Gets/sets the currently selected manga
         /// </summary>
-        public Manga SelectedManga
+        public MangaViewModel SelectedManga
         {
             get
             {
@@ -60,12 +55,7 @@ namespace MeliMelo.ViewModels
                 if (selected_manga_ != value)
                 {
                     selected_manga_ = value;
-                    if (selected_manga_ == null)
-                        manga_ = null;
-                    else
-                        manga_ = new MangaViewModel(manga_updater_, selected_manga_);
                     NotifyOfPropertyChange(() => SelectedManga);
-                    NotifyOfPropertyChange(() => Manga);
                 }
             }
         }
@@ -84,12 +74,11 @@ namespace MeliMelo.ViewModels
                 Manga manga = new Manga();
                 manga.Name = dialog.MangaName;
                 manga.Link = dialog.MangaLink;
-                manga_updater_.Add(manga);
-                mangas_.Refresh();
-                selected_manga_ = manga;
-                manga_ = new MangaViewModel(manga_updater_, selected_manga_);
+                task_.Add(manga);
+                var view_model = new MangaViewModel(task_, manga);
+                mangas_.Add(view_model);
+                selected_manga_ = view_model;
                 NotifyOfPropertyChange(() => SelectedManga);
-                NotifyOfPropertyChange(() => Manga);
             }
         }
 
@@ -100,25 +89,23 @@ namespace MeliMelo.ViewModels
         {
             if (selected_manga_ != null)
             {
-                DeleteMangaViewModel dialog = new DeleteMangaViewModel(selected_manga_);
+                DeleteMangaViewModel dialog = new DeleteMangaViewModel(selected_manga_.Manga);
 
                 var result = window_manager_.ShowDialog(dialog);
 
                 if (result.HasValue && result.Value)
                 {
-                    manga_updater_.Remove(selected_manga_);
-                    if (manga_updater_.Mangas.Count > 0)
+                    task_.Remove(selected_manga_.Manga);
+                    mangas_.Remove(selected_manga_);
+                    if (task_.Mangas.Count > 0)
                     {
-                        selected_manga_ = manga_updater_.Mangas.First();
-                        manga_ = new MangaViewModel(manga_updater_, selected_manga_);
+                        selected_manga_ = mangas_.First();
                     }
                     else
                     {
                         selected_manga_ = null;
-                        manga_ = null;
                     }
                     NotifyOfPropertyChange(() => SelectedManga);
-                    NotifyOfPropertyChange(() => Manga);
                 }
             }
         }
@@ -128,28 +115,23 @@ namespace MeliMelo.ViewModels
         /// </summary>
         public void Update()
         {
-            manga_updater_.Update();
+            task_.Update();
         }
 
         /// <summary>
-        /// Current manga view model
+        /// List of manga view models
         /// </summary>
-        protected MangaViewModel manga_;
-
-        /// <summary>
-        /// Manga updater
-        /// </summary>
-        protected MangasTask manga_updater_;
-
-        /// <summary>
-        /// Observable manga list
-        /// </summary>
-        protected ICollectionView mangas_;
+        protected IObservableCollection<MangaViewModel> mangas_;
 
         /// <summary>
         /// Currently selected manga
         /// </summary>
-        protected Manga selected_manga_;
+        protected MangaViewModel selected_manga_;
+
+        /// <summary>
+        /// Manga updater
+        /// </summary>
+        protected MangasTask task_;
 
         /// <summary>
         /// Window manager

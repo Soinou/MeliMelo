@@ -18,10 +18,10 @@ namespace MeliMelo.ViewModels
         /// <param name="chapter">Chapter to wrap</param>
         public ChapterViewModel(MangasTask task, Manga manga, Chapter chapter)
         {
-            task_ = task;
-            manga_ = manga;
             chapter_ = chapter;
-            chapter_.Read += ChapterRead;
+            chapter_.Read += OnChapterRead;
+            manga_ = manga;
+            task_ = task;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace MeliMelo.ViewModels
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Arguments</param>
-        protected void ChapterRead(object sender, EventArgs e)
+        protected void OnChapterRead(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(() => Read);
         }

@@ -54,7 +54,12 @@ namespace MeliMelo.Impl
         }
 
         /// <summary>
-        /// Called when the application is started
+        /// Called before the services are registered
+        /// </summary>
+        protected abstract void OnInitialize();
+
+        /// <summary>
+        /// Called after the services are registered
         /// </summary>
         protected abstract void OnStart();
 
@@ -65,6 +70,8 @@ namespace MeliMelo.Impl
         /// <param name="e">Event args</param>
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            OnInitialize();
+
             RegisterServices();
 
             OnStart();

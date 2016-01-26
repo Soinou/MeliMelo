@@ -15,8 +15,8 @@ namespace MeliMelo.ViewModels
         {
             DisplayName = "MeliMelo - Add Manga";
 
-            name_ = "";
             link_ = "";
+            name_ = "";
         }
 
         /// <summary>

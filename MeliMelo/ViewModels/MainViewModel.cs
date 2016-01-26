@@ -1,10 +1,9 @@
 ﻿using Caliburn.Micro;
 using MahApps.Metro.Controls;
+using MeliMelo.Core;
 using MeliMelo.Core.Configuration;
 using MeliMelo.Core.Tasks;
-using MeliMelo.Properties;
 using MeliMelo.Utils;
-using Squirrel;
 using System;
 
 namespace MeliMelo.ViewModels
@@ -53,35 +52,11 @@ namespace MeliMelo.ViewModels
         /// <summary>
         /// Updates the application
         /// </summary>
-        public async void ApplicationUpdate()
+        public void ApplicationUpdate()
         {
             if (!App.Debug)
             {
-                bool restart = false;
-
-                string url = Settings.Default.kProjectURL;
-
-                using (var manager = await UpdateManager.GitHubUpdateManager(url))
-                {
-                    var update_info = await manager.CheckForUpdate();
-                    if (update_info != null && update_info.ReleasesToApply.Count > 0)
-                    {
-                        var result = windows_.ShowDialog(new ApplicationUpdateViewModel(true,
-                            update_info));
-
-                        if (result.HasValue && result.Value)
-                        {
-                            await manager.DownloadReleases(update_info.ReleasesToApply);
-                            await manager.ApplyReleases(update_info);
-                            restart = true;
-                        }
-                    }
-                    else
-                        windows_.ShowDialog(new ApplicationUpdateViewModel(false, update_info));
-                }
-
-                if (restart)
-                    UpdateManager.RestartApp();
+                Updater.Update(windows_);
             }
         }
 

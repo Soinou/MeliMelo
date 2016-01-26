@@ -2,6 +2,7 @@
 using MeliMelo.Mangas;
 using MeliMelo.Mangas.Core;
 using MeliMelo.Utils;
+using System;
 using System.Threading.Tasks;
 
 namespace MeliMelo.ViewModels
@@ -15,14 +16,15 @@ namespace MeliMelo.ViewModels
         /// <param name="manga">Manga to wrap</param>
         public MangaViewModel(MangasTask task, Manga manga)
         {
-            task_ = task;
-            manga_ = manga;
-            manga_.NewChapter += MangaNewChapter;
+            DisplayName = manga.Name;
+
             chapters_ = new BindableCollection<ChapterViewModel>();
+            manga_ = manga;
+            manga_.NewChapter += OnMangaNewChapter;
+            task_ = task;
+
             foreach (Chapter chapter in manga_.Chapters)
                 chapters_.Add(new ChapterViewModel(task_, manga_, chapter));
-
-            DisplayName = manga_.Name;
         }
 
         /// <summary>
@@ -48,6 +50,28 @@ namespace MeliMelo.ViewModels
         }
 
         /// <summary>
+        /// Gets the view model manga
+        /// </summary>
+        public Manga Manga
+        {
+            get
+            {
+                return manga_;
+            }
+        }
+
+        /// <summary>
+        /// Gets the manga name
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return manga_.Name + (manga_.HasUnread ? " (New Chapters)" : "");
+            }
+        }
+
+        /// <summary>
         /// Reads all the chapters currently not read
         /// </summary>
         public async void ReadAll()
@@ -58,10 +82,36 @@ namespace MeliMelo.ViewModels
                     chapter.IsRead = true;
 
                 chapters_.Refresh();
+                NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => Chapters);
 
                 task_.Save();
             });
+        }
+
+        /// <summary>
+        /// Called when a chapter is read
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Arguments</param>
+        protected void OnChapterRead(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(() => Name);
+        }
+
+        /// <summary>
+        /// Called when a chapter has been added to the manga
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Arguments</param>
+        protected void OnMangaNewChapter(object sender, DataEventArgs<Chapter> e)
+        {
+            e.Data.Read += OnChapterRead;
+            chapters_.Insert(0, new ChapterViewModel(task_, manga_, e.Data));
+            chapters_.Refresh();
+            NotifyOfPropertyChange(() => Name);
+            NotifyOfPropertyChange(() => Chapters);
+            NotifyOfPropertyChange(() => CanReadAll);
         }
 
         /// <summary>
@@ -78,18 +128,5 @@ namespace MeliMelo.ViewModels
         /// Manga updater
         /// </summary>
         protected MangasTask task_;
-
-        /// <summary>
-        /// Called when a chapter has been added to the manga
-        /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">Arguments</param>
-        private void MangaNewChapter(object sender, DataEventArgs<Chapter> e)
-        {
-            chapters_.Insert(0, new ChapterViewModel(task_, manga_, e.Data));
-            chapters_.Refresh();
-            NotifyOfPropertyChange(() => Chapters);
-            NotifyOfPropertyChange(() => CanReadAll);
-        }
     }
 }

@@ -168,6 +168,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Core\Updater.cs" />
     <Compile Include="Impl\BootstrapperImpl.cs" />
     <Compile Include="Impl\ConfigurationImpl.cs" />
     <Compile Include="Impl\KeyboardManagerImpl.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="ViewModels\ApplicationUpdateViewModel.cs" />
     <Compile Include="ViewModels\AutoTaskViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\ExceptionViewModel.cs" />
     <Compile Include="ViewModels\IntegerViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\PathValueViewModel.cs" />
@@ -195,6 +197,10 @@
     <Page Include="Views\AutoTaskView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ExceptionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>

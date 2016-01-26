@@ -1,4 +1,5 @@
 ﻿using Squirrel;
+using System;
 
 namespace MeliMelo.ViewModels
 {
@@ -35,13 +36,19 @@ namespace MeliMelo.ViewModels
         {
             get
             {
-                if (has_update_)
-                    return "Update available: "
-                        + update_info_.FutureReleaseEntry.Version.ToString()
-                        + " (Current: "
-                        + update_info_.CurrentlyInstalledVersion.Version.ToString() + ")";
+                if (update_info_ != null)
+                {
+                    if (has_update_)
+                        return "Update available: "
+                            + update_info_.FutureReleaseEntry.Version.ToString()
+                            + " (Current: "
+                            + update_info_.CurrentlyInstalledVersion.Version.ToString() + ").";
+                    else
+                        return "No update available !";
+                }
                 else
-                    return "No update available !";
+                    return "Impossible to get updates." + Environment.NewLine
+                        + "Please check your internet connection and retry.";
             }
         }
 

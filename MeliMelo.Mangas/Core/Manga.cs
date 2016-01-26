@@ -35,6 +35,21 @@ namespace MeliMelo.Mangas.Core
         }
 
         /// <summary>
+        /// Gets if the manga has at least one unread chapter
+        /// </summary>
+        public bool HasUnread
+        {
+            get
+            {
+                foreach (var chapter in chapters_)
+                    if (!chapter.IsRead)
+                        return true;
+
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Gets/sets the manga RSS link
         /// </summary>
         public string Link
