@@ -23,7 +23,7 @@ namespace MeliMelo.ViewModels
             }
         }
 
-        public int Progress
+        public byte Progress
         {
             get
             {
@@ -57,7 +57,7 @@ namespace MeliMelo.ViewModels
 
         public event EventHandler Finished;
 
-        protected void NodeChanged(object sender, Utils.DataEventArgs<int> e)
+        protected void NodeChanged(object sender, Utils.DataEventArgs<byte> e)
         {
             Progress = e.Data;
         }
@@ -76,6 +76,6 @@ namespace MeliMelo.ViewModels
 
         protected SortNode node_;
 
-        protected int progress_;
+        protected byte progress_;
     }
 }

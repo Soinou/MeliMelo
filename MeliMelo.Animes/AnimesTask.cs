@@ -208,16 +208,9 @@ namespace MeliMelo.Animes
             // If the file name represents a valid anime
             if (anime.IsValid())
             {
-                // Get the output directory path
-                string outputDirectory = Path.Combine(output_.Value, anime.AnimeTitle());
-
-                // If the output directory does not exist
-                if (!Directory.Exists(outputDirectory))
-                    // Create it
-                    Directory.CreateDirectory(outputDirectory);
-
                 // Create a new sort node and queue it
-                queue_.Enqueue(new SortNode(anime, path, Path.Combine(outputDirectory, name)));
+                queue_.Enqueue(new SortNode(anime, path, Path.Combine(output_.Value,
+                    anime.AnimeTitle(), name)));
             }
             else
                 log_.Error("SortService (TrySort)", "Could not sort file " + name

@@ -42,7 +42,8 @@ namespace MeliMelo.Utils.Log
                     DateTime date = DateTime.Now;
                     string short_date = date.ToString("yyyy-MM-dd");
                     string long_date = date.ToString("yyyy-MM-ddTHH:mm:ss");
-                    string file_name = @"..\data\logs\" + name_ + "_" + short_date + ".log";
+                    string file_name = @"logs\" + name_ + "_" + short_date + ".log";
+                    string path = IoHelper.GetAppDataFile(file_name);
 
                     while (messages_.Count > 0)
                     {
@@ -52,7 +53,7 @@ namespace MeliMelo.Utils.Log
                         {
                             string long_message = "[" + long_date + "]" + message;
 
-                            IoHelper.Append(file_name, long_message + Environment.NewLine);
+                            IoHelper.Append(path, long_message + Environment.NewLine);
                         }
                     }
                 }

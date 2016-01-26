@@ -18,10 +18,10 @@ namespace MeliMelo.Impl
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="file_name">Name of the file holding the configuration</param>
-        public ConfigurationManagerImpl(string file_name)
+        /// <param name="path">Path to the configuration file</param>
+        public ConfigurationManagerImpl(string path)
         {
-            file_name_ = file_name;
+            path_ = path;
             Load();
         }
 
@@ -111,7 +111,7 @@ namespace MeliMelo.Impl
         /// </summary>
         public void Save()
         {
-            IoHelper.Write(file_name_, JsonConvert.SerializeObject(values_,
+            IoHelper.Write(path_, JsonConvert.SerializeObject(values_,
                 new IValueConverter()));
         }
 
@@ -140,9 +140,9 @@ namespace MeliMelo.Impl
         /// </summary>
         protected void Load()
         {
-            if (File.Exists(file_name_))
+            if (File.Exists(path_))
             {
-                string data = IoHelper.Read(file_name_);
+                string data = IoHelper.Read(path_);
 
                 values_ = JsonConvert.DeserializeObject<Dictionary<string, IValue>>(data,
                     new IValueConverter());
@@ -156,9 +156,9 @@ namespace MeliMelo.Impl
         }
 
         /// <summary>
-        /// Name of the file holding the configuration
+        /// Path to the configuration file
         /// </summary>
-        protected string file_name_;
+        protected string path_;
 
         /// <summary>
         /// Values dictionary

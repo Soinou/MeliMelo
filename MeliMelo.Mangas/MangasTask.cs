@@ -22,7 +22,7 @@ namespace MeliMelo.Mangas
         {
             log_ = LogManager.Instance.Get("MeliMelo.Mangas");
 
-            database_ = new DatabaseImpl<Manga>(@"..\data\Mangas.db");
+            database_ = new DatabaseImpl<Manga>(IoHelper.GetAppDataFile("Mangas.db"));
 
             Interval = 3600000;
 

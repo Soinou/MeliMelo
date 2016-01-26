@@ -6,9 +6,9 @@ namespace MeliMelo.Utils
 {
     public class DatabaseImpl<T> : IDatabase<T> where T : class
     {
-        public DatabaseImpl(string file_name)
+        public DatabaseImpl(string path)
         {
-            file_name_ = file_name;
+            path_ = path;
             items_ = null;
 
             Load();
@@ -43,19 +43,18 @@ namespace MeliMelo.Utils
 
         public void Save()
         {
-            IoHelper.Write(file_name_, JsonConvert.SerializeObject(items_));
+            IoHelper.Write(path_, JsonConvert.SerializeObject(items_));
         }
 
         protected void Load()
         {
-            items_ = JsonConvert.DeserializeObject<ICollection<T>>(IoHelper.Read(file_name_));
+            items_ = JsonConvert.DeserializeObject<ICollection<T>>(IoHelper.Read(path_));
 
             if (items_ == null)
                 items_ = new LinkedList<T>();
         }
 
-        protected string file_name_;
-
         protected ICollection<T> items_;
+        protected string path_;
     }
 }

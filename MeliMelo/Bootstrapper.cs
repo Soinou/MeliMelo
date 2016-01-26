@@ -10,6 +10,7 @@ using MeliMelo.Impl;
 using MeliMelo.iTunes;
 using MeliMelo.Mangas;
 using MeliMelo.Screen;
+using MeliMelo.Utils;
 using MeliMelo.ViewModels;
 using System;
 using System.Text;
@@ -156,7 +157,7 @@ namespace MeliMelo
         protected override void RegisterServices()
         {
             // Create managers
-            configuration_ = new ConfigurationManagerImpl(@"..\data\MeliMelo.db");
+            configuration_ = new ConfigurationManagerImpl(IoHelper.GetAppDataFile("MeliMelo.db"));
             keyboard_ = new KeyboardManagerImpl();
             plugins_ = new PluginManagerImpl();
             tasks_ = new TaskManagerImpl();
