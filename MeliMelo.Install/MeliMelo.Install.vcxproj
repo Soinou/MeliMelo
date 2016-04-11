@@ -21,12 +21,15 @@
   <ItemGroup>
     <None Include="build.bat" />
     <None Include="clean.bat" />
-    <None Include="MeliMelo.nuspec">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Install\MeliMelo.Animes.iss" />
+    <None Include="Install\MeliMelo.MangaReader.iss" />
+    <None Include="Install\MeliMelo.Mangas.iss" />
+    <None Include="Install\MeliMelo.Warmer.iss" />
+    <None Include="LICENSE.md" />
+    <None Include="rebuild.bat" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6FB01845-DB31-4337-A734-8814D9446992}</ProjectGuid>
+    <ProjectGuid>{7C31D2F7-5CD5-4424-B26F-3DA66ECB43A1}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -70,35 +73,39 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>build.bat</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>clean.bat</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>build.bat</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>
-    </NMakePreprocessorDefinitions>
-    <OutDir>bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\.tmp\</IntDir>
+    <NMakeBuildCommandLine>
+    </NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>
+    </NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>
+    </NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>build\$(Configuration)\</OutDir>
+    <IntDir>build\$(Configuration)\.tmp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeBuildCommandLine>build.bat</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>clean.bat</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>build.bat</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>
-    </NMakePreprocessorDefinitions>
-    <OutDir>bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\.tmp\</IntDir>
+    <NMakeReBuildCommandLine>rebuild.bat</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>build\$(Configuration)\</OutDir>
+    <IntDir>build\$(Configuration)\.tmp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\.tmp\</IntDir>
-    <NMakeBuildCommandLine>build.bat</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>build.bat</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>clean.bat</NMakeCleanCommandLine>
+    <OutDir>build\$(Configuration)\</OutDir>
+    <IntDir>build\$(Configuration)\.tmp\</IntDir>
+    <NMakeBuildCommandLine>
+    </NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>
+    </NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>
+    </NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\.tmp\</IntDir>
+    <OutDir>build\$(Configuration)\</OutDir>
+    <IntDir>build\$(Configuration)\.tmp\</IntDir>
     <NMakeBuildCommandLine>build.bat</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>build.bat</NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>rebuild.bat</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>clean.bat</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup>

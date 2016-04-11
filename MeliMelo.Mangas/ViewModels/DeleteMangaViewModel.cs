@@ -1,8 +1,15 @@
 ﻿using Caliburn.Micro;
-using MeliMelo.Mangas.Core;
+using MeliMelo.Mangas.Models;
 
 namespace MeliMelo.ViewModels
 {
+    public interface IDeleteMangaViewModelFactory
+    {
+        DeleteMangaViewModel Create(Manga manga);
+
+        void Release(DeleteMangaViewModel view_model);
+    }
+
     /// <summary>
     /// Represents the delete manga confirmation dialog
     /// </summary>
@@ -26,7 +33,10 @@ namespace MeliMelo.ViewModels
         {
             get
             {
-                return "Are you sure you want to delete manga \"" + manga_.Name + "\"";
+                return "Are you really sure you want to delete manga \""
+                    + manga_.Name
+                    + "\" ? It will no longer be available"
+                    + " and all chapter advancement will be lost.";
             }
         }
 

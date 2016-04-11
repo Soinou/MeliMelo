@@ -17,8 +17,8 @@
             <ColumnDefinition Width="100" />
         </Grid.ColumnDefinitions>
 
-        <Label x:Name="Title" Content="Title" />
-        <Label x:Name="Read" Content="Not Read" Grid.Column="1" />
-        <Button x:Name="Open" Content="Open" Grid.Column="2" />
+        <Label x:Name="Title" Content="Title" Style="{StaticResource MeliMelo.Label}" />
+        <Label x:Name="Read" Content="Not Read" Style="{StaticResource MeliMelo.Label}" Grid.Column="1" />
+        <Button x:Name="Open" Content="Open" Style="{StaticResource MeliMelo.Button}" Grid.Column="2" />
     </Grid>
 </UserControl>

@@ -15,7 +15,7 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer Margin="2.5" Padding="2.5">
+        <ScrollViewer Style="{StaticResource MeliMelo.ScrollViewer}">
             <ItemsControl x:Name="Chapters">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -25,6 +25,6 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <Button x:Name="ReadAll" Content="Mark all as read" Margin="0 2.5 0 2.5" Grid.Row="1" />
+        <Button x:Name="ReadAll" Content="Mark all as read" Style="{StaticResource MeliMelo.Button}" Grid.Row="1" />
     </Grid>
 </UserControl>

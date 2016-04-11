@@ -3,6 +3,13 @@ using System;
 
 namespace MeliMelo.ViewModels
 {
+    public interface IAddMangaViewModelFactory
+    {
+        AddMangaViewModel Create();
+
+        void Release(AddMangaViewModel view_model);
+    }
+
     /// <summary>
     /// Represents a manga adding window
     /// </summary>

@@ -8,7 +8,6 @@
     mc:Ignorable="d"
     d:DesignHeight="35"
     d:DesignWidth="400"
-    Height="35"
 >
     <Grid Margin="0">
         <Grid.ColumnDefinitions>
@@ -16,7 +15,7 @@
             <ColumnDefinition Width="150" />
         </Grid.ColumnDefinitions>
 
-        <Label x:Name="Title" Content="Title" />
-        <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Value="{Binding Progress}" Grid.Column="1" />
+        <Label x:Name="Title" Content="Title" Style="{StaticResource MeliMelo.Label}" />
+        <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Value="{Binding Progress}" Style="{StaticResource MeliMelo.ProgressBar}" Grid.Column="1" />
     </Grid>
 </UserControl>

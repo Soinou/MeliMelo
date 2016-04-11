@@ -1,11 +1,16 @@
 ﻿using Caliburn.Micro;
-using MeliMelo.Mangas;
-using MeliMelo.Mangas.Core;
-using System;
+using MeliMelo.Mangas.Models;
 using System.Diagnostics;
 
 namespace MeliMelo.ViewModels
 {
+    public interface IChapterViewModelFactory
+    {
+        ChapterViewModel Create(Manga manga, Chapter chapter);
+
+        void Release(ChapterViewModel view_model);
+    }
+
     /// <summary>
     /// </summary>
     public class ChapterViewModel : PropertyChangedBase
@@ -13,15 +18,24 @@ namespace MeliMelo.ViewModels
         /// <summary>
         /// Creates a new ChapterViewModel
         /// </summary>
-        /// <param name="task">Mangas task</param>
         /// <param name="manga">Manga</param>
         /// <param name="chapter">Chapter to wrap</param>
-        public ChapterViewModel(MangasTask task, Manga manga, Chapter chapter)
+        public ChapterViewModel(Manga manga, Chapter chapter)
         {
             chapter_ = chapter;
             chapter_.Read += OnChapterRead;
             manga_ = manga;
-            task_ = task;
+        }
+
+        /// <summary>
+        /// Gets the chapter number
+        /// </summary>
+        public float? Number
+        {
+            get
+            {
+                return chapter_.Number;
+            }
         }
 
         /// <summary>
@@ -36,13 +50,22 @@ namespace MeliMelo.ViewModels
         }
 
         /// <summary>
+        /// Manga task
+        /// </summary>
+        public MangasTask Task
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets the chapter title
         /// </summary>
         public string Title
         {
             get
             {
-                return chapter_.Title;
+                return chapter_.FormatTitle();
             }
         }
 
@@ -54,15 +77,13 @@ namespace MeliMelo.ViewModels
             Process.Start(chapter_.Link);
             chapter_.IsRead = true;
             NotifyOfPropertyChange(() => Read);
-            task_.Save();
+            Task.Save();
         }
 
         /// <summary>
         /// Called when the chapter has been read
         /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">Arguments</param>
-        protected void OnChapterRead(object sender, EventArgs e)
+        protected void OnChapterRead()
         {
             NotifyOfPropertyChange(() => Read);
         }
@@ -76,10 +97,5 @@ namespace MeliMelo.ViewModels
         /// Manga
         /// </summary>
         protected Manga manga_;
-
-        /// <summary>
-        /// Mangas task
-        /// </summary>
-        protected MangasTask task_;
     }
 }

@@ -1,0 +1,36 @@
+﻿<Controls:MetroWindow
+    x:Class="MeliMelo.Views.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:MeliMelo.Views"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    mc:Ignorable="d"
+    BorderBrush="{DynamicResource AccentColorBrush}"
+    BorderThickness="1"
+    Title="MeliMelo - Warmer"
+    Height="200"
+    Width="500"
+    SaveWindowPosition="False"
+>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+        </Grid.RowDefinitions>
+
+        <Button x:Name="Start" Content="Start" Style="{StaticResource MeliMelo.Button}" />
+        <Button x:Name="Stop" Content="Stop" Style="{StaticResource MeliMelo.Button}" Grid.Column="1" />
+        <ContentControl x:Name="Temperature" Grid.Row="1" Grid.ColumnSpan="2" />
+        <ContentControl x:Name="Interval" Grid.Row="2" Grid.ColumnSpan="2" />
+        <Button x:Name="Save" Content="Save" Style="{StaticResource MeliMelo.Button}" Grid.Row="3" Grid.ColumnSpan="2" />
+    </Grid>
+</Controls:MetroWindow>

@@ -9,12 +9,13 @@
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:cal="http://www.caliburnproject.org"
     mc:Ignorable="d"
-    BorderThickness="0"
-    GlowBrush="Black"
+    BorderBrush="{DynamicResource AccentColorBrush}"
+    BorderThickness="1"
     WindowStartupLocation="CenterScreen"
     ResizeMode="NoResize"
     Height="160"
     Width="450"
+    SaveWindowPosition="False"
 >
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
@@ -29,13 +30,13 @@
             <RowDefinition Height="35" />
         </Grid.RowDefinitions>
 
-        <Label Content="Name" />
-        <TextBox x:Name="MangaName" Grid.Column="1" Grid.ColumnSpan="2" />
+        <Label Content="Name" Style="{StaticResource MeliMelo.Label}" />
+        <TextBox x:Name="MangaName" Style="{StaticResource MeliMelo.TextBox}" Grid.Column="1" Grid.ColumnSpan="2" />
 
-        <Label Content="Link" Grid.Row="1" />
-        <TextBox x:Name="MangaLink" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" />
+        <Label Content="Link" Style="{StaticResource MeliMelo.Label}" Grid.Row="1" />
+        <TextBox x:Name="MangaLink" Style="{StaticResource MeliMelo.TextBox}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" />
 
-        <Button x:Name="Cancel" Content="Cancel" Grid.Row="2" Grid.ColumnSpan="2" />
-        <Button x:Name="Save" Content="Save" Grid.Row="2" Grid.Column="2" />
+        <Button x:Name="Cancel" Content="Cancel" Style="{StaticResource MeliMelo.Button}" Grid.Row="2" Grid.ColumnSpan="2" />
+        <Button x:Name="Save" Content="Save" Style="{StaticResource MeliMelo.Button}" Grid.Row="2" Grid.Column="2" />
     </Grid>
 </Controls:MetroWindow>

@@ -1,0 +1,37 @@
+﻿<UserControl
+    x:Class="MeliMelo.Views.LibrarySorterView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MeliMelo.Views"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Label x:Name="LibraryName" Content="LibraryName" Style="{StaticResource MeliMelo.Label}" Grid.ColumnSpan="2" />
+        <Button x:Name="Start" Content="Start" IsEnabled="{Binding CanStart}" Style="{StaticResource MeliMelo.Button}" Grid.Row="1" />
+        <Button x:Name="Stop" Content="Stop" IsEnabled="{Binding CanStop}" Style="{StaticResource MeliMelo.Button}" Grid.Row="1" Grid.Column="1" />
+        <ScrollViewer Style="{StaticResource MeliMelo.ScrollViewer}" Grid.Row="2" Grid.ColumnSpan="2">
+            <ItemsControl x:Name="Nodes">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

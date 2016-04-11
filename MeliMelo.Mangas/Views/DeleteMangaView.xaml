@@ -9,12 +9,13 @@
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:cal="http://www.caliburnproject.org"
     mc:Ignorable="d"
-    BorderThickness="0"
-    GlowBrush="Black"
+    BorderBrush="{DynamicResource AccentColorBrush}"
+    BorderThickness="1"
     WindowStartupLocation="CenterScreen"
     ResizeMode="NoResize"
-    Height="120"
-    Width="450"
+    Height="160"
+    Width="300"
+    SaveWindowPosition="False"
 >
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
@@ -23,13 +24,15 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="35" />
+            <RowDefinition Height="70" />
             <RowDefinition Height="35" />
         </Grid.RowDefinitions>
 
-        <Label x:Name="DeleteMessage" Content="Please wait..." Grid.ColumnSpan="2" />
+        <Label Style="{StaticResource MeliMelo.Label}" Grid.ColumnSpan="2">
+            <TextBlock x:Name="DeleteMessage" TextWrapping="Wrap" />
+        </Label>
 
-        <Button x:Name="Cancel" Content="Cancel" Grid.Row="1" />
-        <Button x:Name="Delete" Content="Delete" Grid.Row="1" Grid.Column="1" />
+        <Button x:Name="Cancel" Content="Cancel" Style="{StaticResource MeliMelo.Button}" Grid.Row="1" />
+        <Button x:Name="Delete" Content="Delete" Style="{StaticResource MeliMelo.Button}" Grid.Row="1" Grid.Column="1" />
     </Grid>
 </Controls:MetroWindow>

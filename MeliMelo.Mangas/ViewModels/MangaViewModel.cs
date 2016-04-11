@@ -1,30 +1,32 @@
 ﻿using Caliburn.Micro;
-using MeliMelo.Mangas;
-using MeliMelo.Mangas.Core;
-using MeliMelo.Utils;
-using System;
-using System.Threading.Tasks;
+using Castle.Core;
+using MeliMelo.Mangas.Models;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace MeliMelo.ViewModels
 {
-    public class MangaViewModel : Screen
+    public interface IMangaViewModelFactory
+    {
+        MangaViewModel Create(Manga manga);
+
+        void Release(MangaViewModel view_model);
+    }
+
+    public class MangaViewModel : Screen, IInitializable
     {
         /// <summary>
         /// Creates a new MangaViewModel
         /// </summary>
-        /// <param name="task">Mangas task</param>
         /// <param name="manga">Manga to wrap</param>
-        public MangaViewModel(MangasTask task, Manga manga)
+        public MangaViewModel(Manga manga)
         {
             DisplayName = manga.Name;
 
-            chapters_ = new BindableCollection<ChapterViewModel>();
+            chapters_ = new List<ChapterViewModel>();
             manga_ = manga;
             manga_.NewChapter += OnMangaNewChapter;
-            task_ = task;
-
-            foreach (Chapter chapter in manga_.Chapters)
-                chapters_.Add(new ChapterViewModel(task_, manga_, chapter));
         }
 
         /// <summary>
@@ -38,14 +40,27 @@ namespace MeliMelo.ViewModels
             }
         }
 
+        public IChapterViewModelFactory ChapterFactory
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Gets the chapter list
         /// </summary>
-        public IObservableCollection<ChapterViewModel> Chapters
+        public ICollectionView Chapters
         {
             get
             {
-                return chapters_;
+                var view = CollectionViewSource.GetDefaultView(chapters_);
+
+                view.SortDescriptions.Add(new SortDescription("Number",
+                    ListSortDirection.Descending));
+                view.SortDescriptions.Add(new SortDescription("Title",
+                    ListSortDirection.Descending));
+
+                return view;
             }
         }
 
@@ -72,29 +87,41 @@ namespace MeliMelo.ViewModels
         }
 
         /// <summary>
+        /// Manga task
+        /// </summary>
+        public MangasTask Task
+        {
+            get;
+            set;
+        }
+
+        public void Initialize()
+        {
+            foreach (var chapter in manga_.Chapters)
+                chapters_.Add(ChapterFactory.Create(manga_, chapter));
+        }
+
+        /// <summary>
         /// Reads all the chapters currently not read
         /// </summary>
         public async void ReadAll()
         {
-            await Task.Run(() =>
+            await System.Threading.Tasks.Task.Run(() =>
             {
-                foreach (Chapter chapter in manga_.Chapters)
+                foreach (var chapter in manga_.Chapters)
                     chapter.IsRead = true;
 
-                chapters_.Refresh();
                 NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => Chapters);
 
-                task_.Save();
+                Task.Save();
             });
         }
 
         /// <summary>
         /// Called when a chapter is read
         /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">Arguments</param>
-        protected void OnChapterRead(object sender, EventArgs e)
+        protected void OnChapterRead()
         {
             NotifyOfPropertyChange(() => Name);
         }
@@ -102,13 +129,11 @@ namespace MeliMelo.ViewModels
         /// <summary>
         /// Called when a chapter has been added to the manga
         /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">Arguments</param>
-        protected void OnMangaNewChapter(object sender, DataEventArgs<Chapter> e)
+        /// <param name="chapter">Added chapter</param>
+        protected void OnMangaNewChapter(Chapter chapter)
         {
-            e.Data.Read += OnChapterRead;
-            chapters_.Insert(0, new ChapterViewModel(task_, manga_, e.Data));
-            chapters_.Refresh();
+            chapter.Read += OnChapterRead;
+            chapters_.Add(ChapterFactory.Create(manga_, chapter));
             NotifyOfPropertyChange(() => Name);
             NotifyOfPropertyChange(() => Chapters);
             NotifyOfPropertyChange(() => CanReadAll);
@@ -117,16 +142,11 @@ namespace MeliMelo.ViewModels
         /// <summary>
         /// Chapter list
         /// </summary>
-        protected IObservableCollection<ChapterViewModel> chapters_;
+        protected List<ChapterViewModel> chapters_;
 
         /// <summary>
         /// Wrapped manga
         /// </summary>
         protected Manga manga_;
-
-        /// <summary>
-        /// Manga updater
-        /// </summary>
-        protected MangasTask task_;
     }
 }
