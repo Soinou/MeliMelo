@@ -6,7 +6,7 @@ namespace MeliMelo.ViewModels
 {
     public interface IChapterViewModelFactory
     {
-        ChapterViewModel Create(Manga manga, Chapter chapter);
+        ChapterViewModel Create(Manga manga, Chapter chapter, MangasTask task);
 
         void Release(ChapterViewModel view_model);
     }
@@ -20,11 +20,13 @@ namespace MeliMelo.ViewModels
         /// </summary>
         /// <param name="manga">Manga</param>
         /// <param name="chapter">Chapter to wrap</param>
-        public ChapterViewModel(Manga manga, Chapter chapter)
+        /// <param name="task">Mangas task</param>
+        public ChapterViewModel(Manga manga, Chapter chapter, MangasTask task)
         {
             chapter_ = chapter;
             chapter_.Read += OnChapterRead;
             manga_ = manga;
+            task_ = task;
         }
 
         /// <summary>
@@ -50,15 +52,6 @@ namespace MeliMelo.ViewModels
         }
 
         /// <summary>
-        /// Manga task
-        /// </summary>
-        public MangasTask Task
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets the chapter title
         /// </summary>
         public string Title
@@ -77,7 +70,7 @@ namespace MeliMelo.ViewModels
             Process.Start(chapter_.Link);
             chapter_.IsRead = true;
             NotifyOfPropertyChange(() => Read);
-            Task.Save();
+            task_.Save();
         }
 
         /// <summary>
@@ -97,5 +90,10 @@ namespace MeliMelo.ViewModels
         /// Manga
         /// </summary>
         protected Manga manga_;
+
+        /// <summary>
+        /// Mangas task
+        /// </summary>
+        private MangasTask task_;
     }
 }

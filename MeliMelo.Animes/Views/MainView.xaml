@@ -1,0 +1,42 @@
+﻿<Controls:MetroWindow
+    x:Class="MeliMelo.Views.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:local="clr-namespace:MeliMelo.Views"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:cal="http://www.caliburnproject.org"
+    mc:Ignorable="d"
+    BorderBrush="{StaticResource AccentColorBrush}"
+    BorderThickness="1"
+    Title="MeliMelo - Animes"
+    WindowStartupLocation="CenterScreen"
+    Height="400"
+    Width="600"
+    SaveWindowPosition="False"
+>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="70" />
+            <ColumnDefinition Width="70" />
+            <ColumnDefinition Width="70" />
+        </Grid.ColumnDefinitions>
+
+        <Label Content="Library" Style="{StaticResource MeliMelo.Label}" />
+        <ComboBox x:Name="Libraries" DisplayMemberPath="LibraryName" Style="{StaticResource MeliMelo.ComboBox}" Grid.Column="1" />
+        <Button x:Name="Add" Content="Add" Style="{StaticResource MeliMelo.Button}" Grid.Column="2" />
+        <Button x:Name="Edit" Content="Edit" Style="{StaticResource MeliMelo.Button}" Grid.Column="3" />
+        <Button x:Name="Delete" Content="Delete" Style="{StaticResource MeliMelo.Button}" Grid.Column="4" />
+
+        <ContentControl x:Name="ActiveItem" Grid.Row="1" Grid.ColumnSpan="5" />
+    </Grid>
+</Controls:MetroWindow>

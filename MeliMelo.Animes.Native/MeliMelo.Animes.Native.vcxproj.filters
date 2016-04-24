@@ -45,7 +45,7 @@
     <ClCompile Include="src\anitomy\tokenizer.cpp">
       <Filter>src\anitomy</Filter>
     </ClCompile>
-    <ClCompile Include="src\meli_melo\animes\reader.cc">
+    <ClCompile Include="src\meli_melo\animes\anime_parser.cc">
       <Filter>src\meli_melo\animes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,9 +54,6 @@
       <Filter>src\meli_melo\animes</Filter>
     </ClInclude>
     <ClInclude Include="src\meli_melo\animes\marshal.h">
-      <Filter>src\meli_melo\animes</Filter>
-    </ClInclude>
-    <ClInclude Include="src\meli_melo\animes\reader.h">
       <Filter>src\meli_melo\animes</Filter>
     </ClInclude>
     <ClInclude Include="src\anitomy\anitomy.h">
@@ -82,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="src\anitomy\tokenizer.h">
       <Filter>src\anitomy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\meli_melo\animes\anime_parser.h">
+      <Filter>src\meli_melo\animes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

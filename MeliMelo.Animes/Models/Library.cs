@@ -6,39 +6,18 @@
     public class Library
     {
         /// <summary>
-        /// Gets/sets the library input
+        /// Library input
         /// </summary>
-        public string Input
-        {
-            get;
-            set;
-        }
+        public string input;
 
         /// <summary>
-        /// Gets/sets the monitoring state of the library
+        /// Library name
         /// </summary>
-        public bool Monitoring
-        {
-            get;
-            set;
-        }
+        public string name;
 
         /// <summary>
-        /// Gets/sets the library name
+        /// Library output
         /// </summary>
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets/sets the library output
-        /// </summary>
-        public string Output
-        {
-            get;
-            set;
-        }
+        public string output;
     }
 }

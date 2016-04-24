@@ -1,78 +1,183 @@
 ﻿using Caliburn.Micro;
-using Castle.Core;
-using MeliMelo.Common.Services.Configuration;
+using MeliMelo.Warmer.Localization;
 using MeliMelo.Warmer.Models;
 
 namespace MeliMelo.ViewModels
 {
-    public interface IMainViewModelFactory
+    /// <summary>
+    /// Represents the main view model
+    /// </summary>
+    internal class MainViewModel : Screen
     {
-        MainViewModel Create();
-
-        void Release(MainViewModel view_model);
-    }
-
-    public class MainViewModel : Screen, IInitializable
-    {
-        public MainViewModel()
+        /// <summary>
+        /// Creates a new MainViewModel
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        /// <param name="locale">Locale</param>
+        public MainViewModel(Configuration configuration, ILocale locale)
         {
-            DisplayName = "MeliMelo - Warmer";
+            configuration_ = configuration;
+            locale_ = locale;
         }
 
-        public IConfiguration Configuration
+        /// <summary>
+        /// Gets/sets the display name
+        /// </summary>
+        public override string DisplayName
         {
-            get;
-            set;
+            get
+            {
+                return "MeliMelo.Warmer";
+            }
+            set
+            {
+            }
         }
 
-        public IIntegerValueViewModelFactory IntegerFactory
+        /// <summary>
+        /// Gets/sets the task interval
+        /// </summary>
+        public int Interval
         {
-            get;
-            set;
+            get
+            {
+                return configuration_.Interval;
+            }
+            set
+            {
+                if (configuration_.Interval != value)
+                {
+                    configuration_.Interval = value;
+                    NotifyOfPropertyChange(() => Interval);
+                    NotifyOfPropertyChange(() => IntervalText);
+                }
+            }
         }
 
-        public IntegerValueViewModel Interval
+        /// <summary>
+        /// Gets the interval label text
+        /// </summary>
+        public string IntervalText
         {
-            get;
-            protected set;
+            get
+            {
+                return string.Format(locale_["Main.Interval"], Interval);
+            }
         }
 
-        public WarmerTask Task
+        /// <summary>
+        /// Interval tooltip
+        /// </summary>
+        public string IntervalTooltip
         {
-            get;
-            set;
+            get
+            {
+                return locale_["Main.IntervalTooltip"];
+            }
         }
 
-        public IntegerValueViewModel Temperature
+        /// <summary>
+        /// Gets the off label text
+        /// </summary>
+        public string OffLabel
         {
-            get;
-            protected set;
+            get
+            {
+                return locale_["Main.Off"];
+            }
         }
 
-        public void Initialize()
+        /// <summary>
+        /// Gets the on label text
+        /// </summary>
+        public string OnLabel
         {
-            Interval = IntegerFactory.Create("Interval",
-                Configuration.GetInteger("Interval"));
-            Temperature = IntegerFactory.Create("Temperature",
-                Configuration.GetInteger("Temperature"));
-
-            NotifyOfPropertyChange(() => Interval);
-            NotifyOfPropertyChange(() => Temperature);
+            get
+            {
+                return locale_["Main.On"];
+            }
         }
 
-        public void Save()
+        /// <summary>
+        /// Gets/sets the task state
+        /// </summary>
+        public bool State
         {
-            Configuration.Save();
+            get
+            {
+                return configuration_.State;
+            }
+            set
+            {
+                if (configuration_.State != value)
+                {
+                    configuration_.State = value;
+                    NotifyOfPropertyChange(() => State);
+                }
+            }
         }
 
-        public void Start()
+        /// <summary>
+        /// State tooltip
+        /// </summary>
+        public string StateTooltip
         {
-            Task.Start();
+            get
+            {
+                return locale_["Main.StateTooltip"];
+            }
         }
 
-        public void Stop()
+        /// <summary>
+        /// Gets/sets the temperature
+        /// </summary>
+        public int Temperature
         {
-            Task.Stop();
+            get
+            {
+                return configuration_.Temperature;
+            }
+            set
+            {
+                if (configuration_.Temperature != value)
+                {
+                    configuration_.Temperature = value;
+                    NotifyOfPropertyChange(() => Temperature);
+                    NotifyOfPropertyChange(() => TemperatureText);
+                }
+            }
         }
+
+        /// <summary>
+        /// Gets the temperature text
+        /// </summary>
+        public string TemperatureText
+        {
+            get
+            {
+                return string.Format(locale_["Main.Temperature"], Temperature); ;
+            }
+        }
+
+        /// <summary>
+        /// Temperature tooltip
+        /// </summary>
+        public string TemperatureTooltip
+        {
+            get
+            {
+                return locale_["Main.TemperatureTooltip"];
+            }
+        }
+
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        private Configuration configuration_;
+
+        /// <summary>
+        /// Locale
+        /// </summary>
+        private ILocale locale_;
     }
 }

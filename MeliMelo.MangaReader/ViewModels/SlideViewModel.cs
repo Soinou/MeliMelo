@@ -14,8 +14,9 @@ namespace MeliMelo.ViewModels
         /// Creates a new SlideViewModel
         /// </summary>
         /// <param name="slide">Slide</param>
+        /// <param name="height"></param>
         /// <returns>Slide view model</returns>
-        SlideViewModel Create(Slide slide);
+        SlideViewModel Create(Slide slide, int height);
 
         /// <summary>
         /// Releases a slide view model
@@ -27,16 +28,31 @@ namespace MeliMelo.ViewModels
     /// <summary>
     /// Represents a slide view model
     /// </summary>
-    public class SlideViewModel : PropertyChangedBase
+    public class SlideViewModel : PropertyChangedBase, IVirtualizable
     {
         /// <summary>
         /// Creates a new SlideViewModel
         /// </summary>
         /// <param name="slide">Slide</param>
-        public SlideViewModel(Slide slide)
+        /// <param name="height"></param>
+        public SlideViewModel(Slide slide, int height)
         {
             slide_ = slide;
             image_ = null;
+            height_ = height;
+        }
+
+        public int Height
+        {
+            get
+            {
+                return height_;
+            }
+            set
+            {
+                height_ = value;
+                NotifyOfPropertyChange(() => Height);
+            }
         }
 
         /// <summary>
@@ -78,6 +94,8 @@ namespace MeliMelo.ViewModels
                 Source = null;
             }
         }
+
+        private int height_;
 
         /// <summary>
         /// Slide image

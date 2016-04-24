@@ -1,13 +1,21 @@
-﻿using Castle.MicroKernel.Registration;
-using MeliMelo.Animes.Models;
+﻿using MeliMelo.Animes.Models;
+using MeliMelo.Animes.Repositories;
+using MeliMelo.Animes.Utils;
 using MeliMelo.Common.Core;
-using MeliMelo.Common.Utils;
 using MeliMelo.ViewModels;
 
 namespace MeliMelo.Animes
 {
     internal class Bootstrapper : BootstrapperBase
     {
+        protected override string ConfigurationFileName
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         protected override string MutexName
         {
             get
@@ -18,23 +26,30 @@ namespace MeliMelo.Animes
 
         protected override void OnStart()
         {
-            // Components
-            Container.Register(Component.For<TrayIcon>()
-                .DependsOn(Dependency.OnValue("text", "MeliMelo.Animes"))
-                .DependsOn(Dependency.OnValue("icon", Properties.Resources.Icon))
-                .LifeStyle.Singleton);
+            // Tray icon
+            Container.RegisterTrayIcon("MeliMelo.Animes", Properties.Resources.Icon);
 
+            // Components
             Container.RegisterFactory<IAddLibraryViewModelFactory, AddLibraryViewModel>();
             Container.RegisterFactory<ISortingNodeViewModelFactory, SortingNodeViewModel>();
-            Container.RegisterFactory<IMainViewModelFactory, MainViewModel>();
             Container.RegisterFactory<ILibrarySorterFactory, LibrarySorter>();
             Container.RegisterFactory<ILibrarySorterViewModelFactory, LibrarySorterViewModel>();
 
+            // Repositories
             Container.RegisterSingleton<LibrarySorterRepository>();
             Container.RegisterSingleton<LibraryRepository>();
-            Container.RegisterSingleton<ShellViewModel>();
-            Container.RegisterSingleton<Reader>();
 
+            // Views
+            Container.RegisterSingleton<MainViewModel>();
+            Container.RegisterSingleton<ShellViewModel>();
+
+            // Utils
+            Container.RegisterSingleton<DialogManager>();
+
+            // Parser
+            Container.RegisterSingleton<AnimeParser>();
+
+            // Display shell view
             DisplayRootViewFor<ShellViewModel>();
         }
     }

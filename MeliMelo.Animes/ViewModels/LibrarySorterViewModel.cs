@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using MeliMelo.Animes.Collections;
 using MeliMelo.Animes.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,33 +9,21 @@ namespace MeliMelo.ViewModels
 {
     public interface ILibrarySorterViewModelFactory
     {
-        LibrarySorterViewModel Create(LibrarySorter sorter);
+        LibrarySorterViewModel Create(LibrarySorter sorter,
+            ISortingNodeViewModelFactory node_factory);
 
         void Release(LibrarySorterViewModel view_model);
     }
 
     public class LibrarySorterViewModel : Screen
     {
-        public LibrarySorterViewModel(LibrarySorter sorter)
+        public LibrarySorterViewModel(LibrarySorter sorter,
+            ISortingNodeViewModelFactory node_factory)
         {
-            sorter_ = sorter;
+            node_factory_ = node_factory;
             nodes_ = new List<SortingNodeViewModel>();
-        }
-
-        public bool CanStart
-        {
-            get
-            {
-                return !sorter_.Monitoring;
-            }
-        }
-
-        public bool CanStop
-        {
-            get
-            {
-                return sorter_.Monitoring;
-            }
+            sorter_ = sorter;
+            sorter_.Queue.NodeAdded += OnQueueNodeAdded;
         }
 
         public string LibraryName
@@ -60,21 +49,25 @@ namespace MeliMelo.ViewModels
             }
         }
 
-        public void Start()
+        public void Run()
         {
-            sorter_.Start();
-            NotifyOfPropertyChange(() => CanStart);
-            NotifyOfPropertyChange(() => CanStop);
+            sorter_.Scan();
         }
 
-        public void Stop()
+        private void OnQueueNodeAdded(SortingNode data)
         {
-            sorter_.Stop();
-            NotifyOfPropertyChange(() => CanStart);
-            NotifyOfPropertyChange(() => CanStop);
+            var node = node_factory_.Create(data);
+            node.Finished += () =>
+            {
+                nodes_.Remove(node);
+                NotifyOfPropertyChange(() => Nodes);
+            };
+            nodes_.Add(node);
+            NotifyOfPropertyChange(() => Nodes);
         }
 
-        protected List<SortingNodeViewModel> nodes_;
-        protected LibrarySorter sorter_;
+        private ISortingNodeViewModelFactory node_factory_;
+        private List<SortingNodeViewModel> nodes_;
+        private LibrarySorter sorter_;
     }
 }

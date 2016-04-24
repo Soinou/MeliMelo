@@ -1,57 +1,28 @@
 ﻿using Caliburn.Micro;
-using Castle.Core;
 using MeliMelo.Mangas.Models;
+using MeliMelo.Mangas.Utils;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 
 namespace MeliMelo.ViewModels
 {
-    public interface IMainViewModelFactory
-    {
-        MainViewModel Create();
-
-        void Release(MainViewModel view_model);
-    }
-
-    public class MainViewModel : Screen, IInitializable
+    public class MainViewModel : Screen
     {
         /// <summary>
         /// Creates a new MainViewModel
         /// </summary>
-        public MainViewModel()
+        public MainViewModel(IChapterViewModelFactory chapter_factory, DialogManager dialog, MangasTask task,
+            IMangaViewModelFactory manga_factory)
         {
             DisplayName = "MeliMelo - Mangas";
 
+            chapter_factory_ = chapter_factory;
+            dialog_ = dialog;
+            manga_factory_ = manga_factory;
             mangas_ = new BindableCollection<MangaViewModel>();
             selected_manga_ = null;
-        }
-
-        /// <summary>
-        /// Gets/sets the AddMangaViewModel factory
-        /// </summary>
-        public IAddMangaViewModelFactory AddMangaFactory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets/sets the DeleteMangaViewModel factory
-        /// </summary>
-        public IDeleteMangaViewModelFactory DeleteMangaFactory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets/sets the MangaViewModel factory
-        /// </summary>
-        public IMangaViewModelFactory MangaFactory
-        {
-            get;
-            set;
+            task_ = task;
         }
 
         /// <summary>
@@ -90,45 +61,20 @@ namespace MeliMelo.ViewModels
         }
 
         /// <summary>
-        /// Gets/sets the MangasTask
-        /// </summary>
-        public MangasTask Task
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets/sets the WindowManager
-        /// </summary>
-        public IWindowManager WindowManager
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Adds a new manga to the list of mangas
         /// </summary>
         public void Add()
         {
-            var dialog = AddMangaFactory.Create();
+            var manga = dialog_.AddManga();
 
-            var result = WindowManager.ShowDialog(dialog);
-
-            if (result.HasValue && result.Value)
+            if (manga != null)
             {
-                Manga manga = new Manga();
-                manga.Name = dialog.MangaName;
-                manga.Link = dialog.MangaLink;
-                Task.Add(manga);
-                var view_model = MangaFactory.Create(manga);
+                task_.Add(manga);
+                var view_model = manga_factory_.Create(chapter_factory_, manga, task_);
                 mangas_.Add(view_model);
                 selected_manga_ = view_model;
                 NotifyOfPropertyChange(() => SelectedManga);
             }
-
-            AddMangaFactory.Release(dialog);
         }
 
         /// <summary>
@@ -136,29 +82,20 @@ namespace MeliMelo.ViewModels
         /// </summary>
         public void Delete()
         {
-            if (selected_manga_ != null)
+            if (selected_manga_ != null && dialog_.DeleteManga(selected_manga_.Manga))
             {
-                var dialog = DeleteMangaFactory.Create(selected_manga_.Manga);
-
-                var result = WindowManager.ShowDialog(dialog);
-
-                if (result.HasValue && result.Value)
+                task_.Remove(selected_manga_.Manga);
+                mangas_.Remove(selected_manga_);
+                manga_factory_.Release(selected_manga_);
+                if (task_.Mangas.Count() > 0)
                 {
-                    Task.Remove(selected_manga_.Manga);
-                    mangas_.Remove(selected_manga_);
-                    MangaFactory.Release(selected_manga_);
-                    if (Task.Mangas.Count > 0)
-                    {
-                        selected_manga_ = mangas_.First();
-                    }
-                    else
-                    {
-                        selected_manga_ = null;
-                    }
-                    NotifyOfPropertyChange(() => SelectedManga);
+                    selected_manga_ = mangas_.First();
                 }
-
-                DeleteMangaFactory.Release(dialog);
+                else
+                {
+                    selected_manga_ = null;
+                }
+                NotifyOfPropertyChange(() => SelectedManga);
             }
         }
 
@@ -167,8 +104,8 @@ namespace MeliMelo.ViewModels
         /// </summary>
         public void Initialize()
         {
-            foreach (Manga manga in Task.Mangas)
-                mangas_.Add(MangaFactory.Create(manga));
+            foreach (Manga manga in task_.Mangas)
+                mangas_.Add(manga_factory_.Create(chapter_factory_, manga, task_));
         }
 
         /// <summary>
@@ -176,7 +113,7 @@ namespace MeliMelo.ViewModels
         /// </summary>
         public void Update()
         {
-            Task.Update();
+            task_.Update();
         }
 
         /// <summary>
@@ -188,5 +125,25 @@ namespace MeliMelo.ViewModels
         /// Currently selected manga
         /// </summary>
         protected MangaViewModel selected_manga_;
+
+        /// <summary>
+        /// Chapter factory
+        /// </summary>
+        private IChapterViewModelFactory chapter_factory_;
+
+        /// <summary>
+        /// Dialog manager
+        /// </summary>
+        private DialogManager dialog_;
+
+        /// <summary>
+        /// Manga view model factory
+        /// </summary>
+        private IMangaViewModelFactory manga_factory_;
+
+        /// <summary>
+        /// Manga updater task
+        /// </summary>
+        private MangasTask task_;
     }
 }

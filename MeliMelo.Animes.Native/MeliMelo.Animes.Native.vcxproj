@@ -29,7 +29,7 @@
     <ClCompile Include="src\anitomy\token.cpp" />
     <ClCompile Include="src\anitomy\tokenizer.cpp" />
     <ClCompile Include="src\meli_melo\animes\anime.cc" />
-    <ClCompile Include="src\meli_melo\animes\reader.cc" />
+    <ClCompile Include="src\meli_melo\animes\anime_parser.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\anitomy\anitomy.h" />
@@ -42,7 +42,7 @@
     <ClInclude Include="src\anitomy\tokenizer.h" />
     <ClInclude Include="src\meli_melo\animes\anime.h" />
     <ClInclude Include="src\meli_melo\animes\marshal.h" />
-    <ClInclude Include="src\meli_melo\animes\reader.h" />
+    <ClInclude Include="src\meli_melo\animes\anime_parser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />

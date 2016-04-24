@@ -1,7 +1,6 @@
 ﻿using Caliburn.Micro;
-using MeliMelo.Animes.Models;
+using MeliMelo.Animes.Collections;
 using MeliMelo.Common.Utils;
-using System;
 
 namespace MeliMelo.ViewModels
 {
@@ -18,9 +17,10 @@ namespace MeliMelo.ViewModels
         {
             node_ = node;
             progress_ = node_.Progress;
-            //node_.Started += NodeStarted;
-            //node_.Finished += NodeFinished;
-            //node_.Changed += NodeChanged;
+
+            node_.Started += NodeStarted;
+            node_.Finished += NodeFinished;
+            node_.Changed += NodeChanged;
         }
 
         public bool IsIndeterminate
@@ -63,27 +63,27 @@ namespace MeliMelo.ViewModels
             }
         }
 
-        public event EventHandler Finished;
+        public event DataEventHandler Finished;
 
-        protected void NodeChanged(object sender, DataEventArgs<byte> e)
+        private void NodeChanged(byte e)
         {
-            Progress = e.Data;
+            Progress = e;
         }
 
-        protected void NodeFinished(object sender, EventArgs e)
+        private void NodeFinished()
         {
             if (Finished != null)
-                Finished(this, new EventArgs());
+                Finished();
         }
 
-        protected void NodeStarted(object sender, EventArgs e)
+        private void NodeStarted()
         {
             NotifyOfPropertyChange(() => IsIndeterminate);
             NotifyOfPropertyChange(() => Progress);
         }
 
-        protected SortingNode node_;
+        private SortingNode node_;
 
-        protected byte progress_;
+        private byte progress_;
     }
 }

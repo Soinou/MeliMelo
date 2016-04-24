@@ -1,32 +1,39 @@
 ﻿using Caliburn.Micro;
-using Castle.Core;
 using MeliMelo.Mangas.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace MeliMelo.ViewModels
 {
     public interface IMangaViewModelFactory
     {
-        MangaViewModel Create(Manga manga);
+        MangaViewModel Create(IChapterViewModelFactory factory, Manga manga, MangasTask task);
 
         void Release(MangaViewModel view_model);
     }
 
-    public class MangaViewModel : Screen, IInitializable
+    public class MangaViewModel : Screen
     {
         /// <summary>
         /// Creates a new MangaViewModel
         /// </summary>
+        /// <param name="factory">Chapter factory</param>
         /// <param name="manga">Manga to wrap</param>
-        public MangaViewModel(Manga manga)
+        /// <param name="task">Mangas task</param>
+        public MangaViewModel(IChapterViewModelFactory factory, Manga manga, MangasTask task)
         {
             DisplayName = manga.Name;
 
             chapters_ = new List<ChapterViewModel>();
+            factory_ = factory;
             manga_ = manga;
             manga_.NewChapter += OnMangaNewChapter;
+            task_ = task;
+
+            foreach (var chapter in manga_.Chapters)
+                chapters_.Add(factory_.Create(manga_, chapter, task_));
         }
 
         /// <summary>
@@ -38,12 +45,6 @@ namespace MeliMelo.ViewModels
             {
                 return manga_.Chapters.Count > 0;
             }
-        }
-
-        public IChapterViewModelFactory ChapterFactory
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -87,26 +88,11 @@ namespace MeliMelo.ViewModels
         }
 
         /// <summary>
-        /// Manga task
-        /// </summary>
-        public MangasTask Task
-        {
-            get;
-            set;
-        }
-
-        public void Initialize()
-        {
-            foreach (var chapter in manga_.Chapters)
-                chapters_.Add(ChapterFactory.Create(manga_, chapter));
-        }
-
-        /// <summary>
         /// Reads all the chapters currently not read
         /// </summary>
         public async void ReadAll()
         {
-            await System.Threading.Tasks.Task.Run(() =>
+            await Task.Run(() =>
             {
                 foreach (var chapter in manga_.Chapters)
                     chapter.IsRead = true;
@@ -114,7 +100,7 @@ namespace MeliMelo.ViewModels
                 NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => Chapters);
 
-                Task.Save();
+                task_.Save();
             });
         }
 
@@ -133,7 +119,7 @@ namespace MeliMelo.ViewModels
         protected void OnMangaNewChapter(Chapter chapter)
         {
             chapter.Read += OnChapterRead;
-            chapters_.Add(ChapterFactory.Create(manga_, chapter));
+            chapters_.Add(factory_.Create(manga_, chapter, task_));
             NotifyOfPropertyChange(() => Name);
             NotifyOfPropertyChange(() => Chapters);
             NotifyOfPropertyChange(() => CanReadAll);
@@ -148,5 +134,15 @@ namespace MeliMelo.ViewModels
         /// Wrapped manga
         /// </summary>
         protected Manga manga_;
+
+        /// <summary>
+        /// Chapter factory
+        /// </summary>
+        private IChapterViewModelFactory factory_;
+
+        /// <summary>
+        /// Mangas task
+        /// </summary>
+        private MangasTask task_;
     }
 }

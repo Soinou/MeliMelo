@@ -7,8 +7,9 @@
     xmlns:cal="http://www.caliburnproject.org"
     mc:Ignorable="d"
     d:DesignWidth="1140"
+    d:DesignHeight="1600"
 >
     <Grid>
-        <Image Margin="0 2.5 0 2.5" Height="1600" Source="{Binding Source}" Opacity="20" />
+        <Image Margin="0 2.5 0 2.5" Height="{Binding Height}" Source="{Binding Source}" />
     </Grid>
 </UserControl>

@@ -1,84 +1,61 @@
 ﻿using Caliburn.Micro;
-using MeliMelo.MangaReader.Models;
-using System.Collections.Generic;
 
 namespace MeliMelo.ViewModels
 {
     /// <summary>
     /// Shell view model
     /// </summary>
-    public class ShellViewModel : PropertyChangedBase
+    public class ShellViewModel : Conductor<Screen>
     {
         /// <summary>
         /// Creates a new ShellViewModel
         /// </summary>
-        public ShellViewModel(ISettingsFlyoutViewModelFactory settings_factory,
-            IMangaViewModelFactory manga_factory)
+        public ShellViewModel(ReaderViewModel reader, SettingsViewModel settings)
         {
-            flyout_ = settings_factory.Create();
-            flyout_.MangaSelected += OnFlyoutMangaSelected;
-            manga_ = null;
-            manga_factory_ = manga_factory;
-        }
+            DisplayName = "MeliMelo.MangaReader";
 
-        /// <summary>
-        /// Gets the list of flyouts
-        /// </summary>
-        public IEnumerable<FlyoutBaseViewModel> Flyouts
-        {
-            get
+            reader_ = reader;
+            reader_.MangaChanged += OnReaderMangaChanged;
+            settings_ = settings;
+
+            ActivateItem(reader_);
+
+            if (reader_.SelectedManga != null)
             {
-                return new SettingsFlyoutViewModel[] { flyout_ };
+                DisplayName = reader_.SelectedManga.MangaName + " - MeliMelo.MangaReader";
             }
         }
 
-        /// <summary>
-        /// Gets the selected manga view model
-        /// </summary>
-        public MangaViewModel Manga
+        public void Reader()
         {
-            get
-            {
-                return manga_;
-            }
+            ActivateItem(reader_);
         }
 
-        /// <summary>
-        /// Opens/closes the settings flyout
-        /// </summary>
         public void Settings()
         {
-            flyout_.IsOpen = !flyout_.IsOpen;
+            ActivateItem(settings_);
         }
 
-        /// <summary>
-        /// Triggered when a new manga was selected in the flyout
-        /// </summary>
-        /// <param name="manga">Newly selected manga</param>
-        private void OnFlyoutMangaSelected(Manga manga)
+        private void OnReaderMangaChanged(MangaViewModel manga)
         {
-            if (manga_ != null)
+            if (manga == null)
             {
-                manga_factory_.Release(manga_);
+                DisplayName = "MeliMelo.MangaReader";
             }
-
-            manga_ = manga_factory_.Create(manga);
-            NotifyOfPropertyChange(() => Manga);
+            else
+            {
+                DisplayName = manga.MangaName + " - MeliMelo.MangaReader";
+            }
         }
 
         /// <summary>
-        /// Settings flyout
+        /// Reader view model
         /// </summary>
-        private SettingsFlyoutViewModel flyout_;
+        private ReaderViewModel reader_;
 
         /// <summary>
-        /// Currently selected manga view model
+        /// Settings view model
         /// </summary>
-        private MangaViewModel manga_;
-
-        /// <summary>
-        /// Manga view model factory
-        /// </summary>
-        private IMangaViewModelFactory manga_factory_;
+        private SettingsViewModel settings_;
     }
 }

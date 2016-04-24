@@ -1,132 +1,173 @@
 ﻿using Caliburn.Micro;
-using MeliMelo.Common.Services.Configuration;
-using MeliMelo.Common.Utils;
+using MeliMelo.Ui.Controls;
+using MeliMelo.Warmer.Helpers;
+using MeliMelo.Warmer.Localization;
 using MeliMelo.Warmer.Models;
+using System.Globalization;
 using System.Windows;
 
 namespace MeliMelo.ViewModels
 {
-    internal class ShellViewModel : Screen
+    /// <summary>
+    /// Represents the shell view model
+    /// </summary>
+    public class ShellViewModel : Screen
     {
+        /// <summary>
+        /// Creates a new ShellViewModel
+        /// </summary>
         public ShellViewModel()
         {
-            open_ = false;
-        }
+            configuration_ = new Configuration();
+            task_ = new WarmerTask(configuration_);
+            tray_ = new TrayIcon("MeliMelo.Warmer", Warmer.Properties.Resources.Icon);
+            main_open_ = false;
 
-        public IConfiguration Configuration
-        {
-            get;
-            set;
-        }
-
-        public IMainViewModelFactory MainFactory
-        {
-            get;
-            set;
-        }
-
-        public WarmerTask Task
-        {
-            get;
-            set;
-        }
-
-        public TrayIcon TrayIcon
-        {
-            get;
-            set;
-        }
-
-        public IWindowManager WindowManager
-        {
-            get;
-            set;
-        }
-
-        protected void Exit()
-        {
-            Task.Stop();
-            TrayIcon.Hide();
-            Application.Current.Shutdown(0);
-        }
-
-        protected override void OnInitialize()
-        {
-            Task.Start();
-
-            TrayIcon.AddItem(kShow);
-            TrayIcon.AddSeparator();
-            TrayIcon.AddItem(kStart);
-            TrayIcon.AddItem(kStop);
-            TrayIcon.AddSeparator();
-            TrayIcon.AddItem(kExit);
-
-            TrayIcon.ItemClicked += TrayIconItemClicked;
-            TrayIcon.DoubleClicked += TrayIconDoubleClicked;
-
-            TrayIcon.Show();
-        }
-
-        protected void Show()
-        {
-            if (!open_)
+            switch (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
             {
-                open_ = true;
+                case "fr":
+                    locale_ = new FrenchLocale();
+                    break;
 
-                var view = MainFactory.Create();
+                default:
+                    locale_ = new EnglishLocale();
+                    break;
+            }
 
-                WindowManager.ShowDialog(view);
+            about_ = locale_["Tray.About"];
+            show_ = locale_["Tray.Show"];
+            exit_ = locale_["Tray.Exit"];
 
-                MainFactory.Release(view);
+            tray_.AddItem(show_);
+            tray_.AddSeparator();
+            tray_.AddItem(about_);
+            tray_.AddSeparator();
+            tray_.AddItem(exit_);
 
-                open_ = false;
+            tray_.ItemClicked += TrayIconItemClicked;
+            tray_.DoubleClicked += TrayIconDoubleClicked;
+
+            tray_.Show();
+        }
+
+        /// <summary>
+        /// Opens the about window
+        /// </summary>
+        private void About()
+        {
+            if (!about_open_)
+            {
+                about_open_ = true;
+
+                var manager = new WindowManager();
+                var about = new AboutViewModel(locale_);
+
+                manager.ShowDialog(about);
+
+                about_open_ = false;
             }
         }
 
-        protected void Start()
+        /// <summary>
+        /// Exits the application
+        /// </summary>
+        private void Exit()
         {
-            Task.Start();
+            // Stop the task but don't update the configuration value
+            task_.Stop();
+            tray_.Hide();
+            Application.Current.Shutdown(0);
         }
 
-        protected void Stop()
+        /// <summary>
+        /// Shows the main view
+        /// </summary>
+        private void Show()
         {
-            Task.Stop();
+            if (!main_open_)
+            {
+                main_open_ = true;
+
+                var manager = new WindowManager();
+                var main = new MainViewModel(configuration_, locale_);
+
+                manager.ShowDialog(main);
+
+                main_open_ = false;
+            }
         }
 
-        protected void TrayIconDoubleClicked(object sender, System.EventArgs e)
+        /// <summary>
+        /// called when the tray icon is double clicked
+        /// </summary>
+        private void TrayIconDoubleClicked()
         {
             Show();
         }
 
-        protected void TrayIconItemClicked(object sender, DataEventArgs<string> e)
+        /// <summary>
+        /// Called when a tray icon menu item is clicked
+        /// </summary>
+        /// <param name="item">Item clicked</param>
+        private void TrayIconItemClicked(string item)
         {
-            switch (e.Data)
+            if (item == about_)
             {
-                case kShow:
-                    Show();
-                    break;
-
-                case kStart:
-                    Start();
-                    break;
-
-                case kStop:
-                    Stop();
-                    break;
-
-                case kExit:
-                    Exit();
-                    break;
-
-                default:
-                    break;
+                About();
+            }
+            else if (item == show_)
+            {
+                Show();
+            }
+            else if (item == exit_)
+            {
+                Exit();
             }
         }
 
-        protected const string kExit = "Exit";
-        protected const string kShow = "Show";
-        protected const string kStart = "Start";
-        protected const string kStop = "Stop";
-        protected bool open_;
+        /// <summary>
+        /// About menu item
+        /// </summary>
+        private string about_;
+
+        /// <summary>
+        /// If the about window is opened
+        /// </summary>
+        private bool about_open_;
+
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        private Configuration configuration_;
+
+        /// <summary>
+        /// Exit menu item
+        /// </summary>
+        private string exit_;
+
+        /// <summary>
+        /// Locale
+        /// </summary>
+        private ILocale locale_;
+
+        /// <summary>
+        /// If the main view is opened
+        /// </summary>
+        private bool main_open_;
+
+        /// <summary>
+        /// Show menu item
+        /// </summary>
+        private string show_;
+
+        /// <summary>
+        /// Task
+        /// </summary>
+        private WarmerTask task_;
+
+        /// <summary>
+        /// Tray icon
+        /// </summary>
+        private TrayIcon tray_;
     }
 }

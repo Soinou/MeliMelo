@@ -9,9 +9,10 @@
     mc:Ignorable="d"
     BorderBrush="{DynamicResource AccentColorBrush}"
     BorderThickness="1"
-    Title="MeliMelo - Warmer"
-    Height="200"
+    TitleCaps="True"
+    Height="160"
     Width="500"
+    WindowStartupLocation="CenterScreen"
     SaveWindowPosition="False"
 >
     <Grid Margin="10">
@@ -24,13 +25,12 @@
             <RowDefinition Height="35" />
             <RowDefinition Height="35" />
             <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
         </Grid.RowDefinitions>
 
-        <Button x:Name="Start" Content="Start" Style="{StaticResource MeliMelo.Button}" />
-        <Button x:Name="Stop" Content="Stop" Style="{StaticResource MeliMelo.Button}" Grid.Column="1" />
-        <ContentControl x:Name="Temperature" Grid.Row="1" Grid.ColumnSpan="2" />
-        <ContentControl x:Name="Interval" Grid.Row="2" Grid.ColumnSpan="2" />
-        <Button x:Name="Save" Content="Save" Style="{StaticResource MeliMelo.Button}" Grid.Row="3" Grid.ColumnSpan="2" />
+        <Controls:ToggleSwitch IsChecked="{Binding State}" OnLabel="{Binding OnLabel}" OffLabel="{Binding OffLabel}" Margin="2.5" Padding="0" FontSize="12" FontFamily="Segoe UI" ToolTip="{Binding StateTooltip}" Grid.ColumnSpan="2" />
+        <Label x:Name="TemperatureText" Style="{StaticResource MeliMelo.Label}" Grid.Row="1" />
+        <Slider x:Name="Temperature" Style="{StaticResource MeliMelo.Slider}" Minimum="1100" Maximum="6500" TickFrequency="100" IsSnapToTickEnabled="True" ToolTip="{Binding TemperatureTooltip}" Grid.Row="1" Grid.Column="1" />
+        <Label x:Name="IntervalText" Style="{StaticResource MeliMelo.Label}" Grid.Row="2" />
+        <Slider x:Name="Interval" Style="{StaticResource MeliMelo.Slider}" Minimum="100" Maximum="10000" TickFrequency="100" IsSnapToTickEnabled="True" ToolTip="{Binding IntervalTooltip}" Grid.Row="2" Grid.Column="1" />
     </Grid>
 </Controls:MetroWindow>

@@ -1,75 +1,75 @@
 ﻿using Caliburn.Micro;
-using Castle.Core;
 using MeliMelo.Common.Utils;
 using MeliMelo.Mangas.Models;
 using System;
 
 namespace MeliMelo.ViewModels
 {
-    public class ShellViewModel : Screen, IInitializable
+    /// <summary>
+    /// Shell view model
+    /// </summary>
+    public class ShellViewModel : Screen
     {
-        public ShellViewModel()
+        /// <summary>
+        /// Creates a new ShellViewModel
+        /// </summary>
+        /// <param name="main">Main view model</param>
+        /// <param name="manager">Window manager</param>
+        /// <param name="task">Mangas task</param>
+        /// <param name="tray">Tray icon</param>
+        public ShellViewModel(MainViewModel main, IWindowManager manager, MangasTask task,
+            TrayIcon tray)
         {
+            main_ = main;
+            manager_ = manager;
             open_ = false;
+            task_ = task;
+            tray_ = tray;
+
+            task_.MangaUpdated += TaskMangaUpdated;
+
+            tray_.ItemClicked += IconItemClicked;
+            tray_.DoubleClicked += IconDoubleClicked;
+            tray_.NotificationClicked += IconNotificationClicked;
+
+            tray_.AddItem(kShow);
+            tray_.AddSeparator();
+            tray_.AddItem(kStart);
+            tray_.AddItem(kStop);
+            tray_.AddSeparator();
+            tray_.AddItem(kExit);
+
+            tray_.Show();
+
+            task_.Start();
         }
 
-        public TrayIcon Icon
+        /// <summary>
+        /// Exits the program
+        /// </summary>
+        private void Exit()
         {
-            get;
-            set;
-        }
-
-        public IMainViewModelFactory MainFactory
-        {
-            get;
-            set;
-        }
-
-        public MangasTask Task
-        {
-            get;
-            set;
-        }
-
-        public IWindowManager WindowManager
-        {
-            get;
-            set;
-        }
-
-        public void Initialize()
-        {
-            Task.MangaUpdated += TaskMangaUpdated;
-
-            Icon.ItemClicked += IconItemClicked;
-            Icon.DoubleClicked += IconDoubleClicked;
-            Icon.NotificationClicked += IconNotificationClicked;
-
-            Icon.AddItem(kShow);
-            Icon.AddSeparator();
-            Icon.AddItem(kStart);
-            Icon.AddItem(kStop);
-            Icon.AddSeparator();
-            Icon.AddItem(kExit);
-
-            Icon.Show();
-
-            Task.Start();
-        }
-
-        protected void Exit()
-        {
-            Task.Stop();
-            Icon.Hide();
+            task_.Stop();
+            tray_.Hide();
             TryClose();
         }
 
-        protected void IconDoubleClicked(object sender, EventArgs e)
+        /// <summary>
+        /// Called when the tray icon has been double clicked
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Arguments</param>
+        private void IconDoubleClicked(object sender, EventArgs e)
         {
             Show();
         }
 
-        protected void IconItemClicked(object sender, DataEventArgs<string> e)
+        /// <summary>
+        /// Called when an item of the tray icon menu has been clicked
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Arguments</param>
+        private void IconItemClicked(object sender, DataEventArgs<string> e)
         {
             switch (e.Data)
             {
@@ -94,46 +94,96 @@ namespace MeliMelo.ViewModels
             }
         }
 
-        protected void IconNotificationClicked(object sender, EventArgs e)
+        /// <summary>
+        /// Called when a tray icon notification has been clicked
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Arguments</param>
+        private void IconNotificationClicked(object sender, EventArgs e)
         {
             Show();
         }
 
-        protected void Show()
+        /// <summary>
+        /// Shows the main view
+        /// </summary>
+        private void Show()
         {
             if (!open_)
             {
                 open_ = true;
 
-                var window = MainFactory.Create();
-
-                WindowManager.ShowDialog(window);
-
-                MainFactory.Release(window);
+                manager_.ShowDialog(main_);
 
                 open_ = false;
             }
         }
 
-        protected void Start()
+        /// <summary>
+        /// Starts the task
+        /// </summary>
+        private void Start()
         {
-            Task.Start();
+            task_.Start();
         }
 
-        protected void Stop()
+        /// <summary>
+        /// Stops the task
+        /// </summary>
+        private void Stop()
         {
-            Task.Stop();
+            task_.Stop();
         }
 
-        protected void TaskMangaUpdated(object sender, DataEventArgs<uint> e)
+        /// <summary>
+        /// Called when the manga task has new chapters available
+        /// </summary>
+        /// <param name="count">Count of new available chapters</param>
+        private void TaskMangaUpdated(uint count)
         {
-            Icon.Notify("MeliMelo.Mangas", e.Data + " new chapters available");
+            tray_.Notify("MeliMelo.Mangas", count + " new chapters available");
         }
 
-        protected const string kExit = "Exit";
-        protected const string kShow = "Show";
-        protected const string kStart = "Start";
-        protected const string kStop = "Stop";
-        protected bool open_;
+        /// <summary>
+        /// Exit constant
+        /// </summary>
+        private const string kExit = "Exit";
+
+        /// <summary>
+        /// Show constant
+        /// </summary>
+        private const string kShow = "Show";
+
+        /// <summary>
+        /// Start constant
+        /// </summary>
+        private const string kStart = "Start";
+
+        /// <summary>
+        /// Stop constant
+        /// </summary>
+        private const string kStop = "Stop";
+
+        /// <summary>
+        /// Main view model
+        /// </summary>
+        private MainViewModel main_;
+
+        /// <summary>
+        /// Window manager
+        /// </summary>
+        private IWindowManager manager_;
+
+        private bool open_;
+
+        /// <summary>
+        /// Mangas task
+        /// </summary>
+        private MangasTask task_;
+
+        /// <summary>
+        /// Tray icon
+        /// </summary>
+        private TrayIcon tray_;
     }
 }

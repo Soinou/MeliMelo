@@ -1,43 +1,33 @@
-﻿using Castle.Core;
-using MeliMelo.Common.Utils;
+﻿using MeliMelo.Animes.Collections;
 using System.IO;
 
 namespace MeliMelo.Animes.Models
 {
     public interface ILibrarySorterFactory
     {
-        LibrarySorter Create(Library library);
+        LibrarySorter Create(Library library, AnimeParser parser);
 
         void Release(LibrarySorter task);
     }
 
-    public class LibrarySorter : DisposableBase, IInitializable
+    public class LibrarySorter
     {
-        public LibrarySorter(Library library)
+        public LibrarySorter(Library library, AnimeParser parser)
         {
             library_ = library;
+            parser_ = parser;
             queue_ = new SortingQueue();
-            watcher_ = new DirectoryWatcher(library.Input);
         }
 
         public string Input
         {
             get
             {
-                return library_.Input;
+                return library_.input;
             }
             set
             {
-                library_.Input = value;
-                watcher_.Path = value;
-            }
-        }
-
-        public bool Monitoring
-        {
-            get
-            {
-                return library_.Monitoring;
+                library_.input = value;
             }
         }
 
@@ -45,11 +35,11 @@ namespace MeliMelo.Animes.Models
         {
             get
             {
-                return library_.Name;
+                return library_.name;
             }
             set
             {
-                library_.Name = value;
+                library_.name = value;
             }
         }
 
@@ -57,11 +47,11 @@ namespace MeliMelo.Animes.Models
         {
             get
             {
-                return library_.Output;
+                return library_.output;
             }
             set
             {
-                library_.Output = value;
+                library_.output = value;
             }
         }
 
@@ -73,66 +63,9 @@ namespace MeliMelo.Animes.Models
             }
         }
 
-        /// <summary>
-        /// Gets/sets the Reader used by this sorter
-        /// </summary>
-        public Reader Reader
+        public void Scan()
         {
-            get;
-            set;
-        }
-
-        public void Initialize()
-        {
-            watcher_.NewFile += OnWatcherNewFile;
-
-            if (library_.Monitoring)
-            {
-                if (Directory.Exists(Input))
-                {
-                    watcher_.Start();
-                }
-            }
-        }
-
-        public void Start()
-        {
-            if (!library_.Monitoring)
-            {
-                if (Directory.Exists(Input))
-                {
-                    watcher_.Start();
-
-                    Scan();
-
-                    library_.Monitoring = true;
-                }
-            }
-        }
-
-        public void Stop()
-        {
-            if (library_.Monitoring)
-            {
-                watcher_.Stop();
-
-                library_.Monitoring = false;
-            }
-        }
-
-        protected override void OnFinalize()
-        {
-            watcher_.Dispose();
-        }
-
-        protected void OnWatcherNewFile(FileInfo data)
-        {
-            Sort(data);
-        }
-
-        protected void Scan()
-        {
-            foreach (var file in Directory.GetFiles(Input))
+            foreach (var file in Directory.GetFiles(Input, "*", SearchOption.AllDirectories))
             {
                 var info = new FileInfo(file);
 
@@ -143,9 +76,9 @@ namespace MeliMelo.Animes.Models
             }
         }
 
-        protected void Sort(FileInfo file)
+        private void Sort(FileInfo file)
         {
-            Anime anime = Reader.Read(file.Name);
+            Anime anime = parser_.Read(file.Name);
 
             if (anime.IsValid())
             {
@@ -153,10 +86,8 @@ namespace MeliMelo.Animes.Models
             }
         }
 
-        protected Library library_;
-
-        protected SortingQueue queue_;
-
-        protected DirectoryWatcher watcher_;
+        private Library library_;
+        private AnimeParser parser_;
+        private SortingQueue queue_;
     }
 }

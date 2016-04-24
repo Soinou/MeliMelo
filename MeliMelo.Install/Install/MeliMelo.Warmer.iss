@@ -33,8 +33,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\{#MyProjectName}\build\Release\x86\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\{#MyProjectName}\build\Release\x86\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\{#MyProjectName}\build\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\{#MyProjectName}\build\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -46,3 +46,6 @@ Filename: "{app}\{#MyAppExeName}"; Flags: nowait runhidden
 
 [UninstallRun]
 Filename: "{sys}\taskkill.exe"; Parameters: "/f /im {#MyAppExeName}"; Flags: runhidden
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\data"

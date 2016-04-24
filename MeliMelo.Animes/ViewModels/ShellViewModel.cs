@@ -1,83 +1,35 @@
 ﻿using Caliburn.Micro;
-using Castle.Core;
-using MeliMelo.Animes.Models;
 using MeliMelo.Common.Utils;
 using System;
+using System.Threading.Tasks;
 
 namespace MeliMelo.ViewModels
 {
-    public class ShellViewModel : Screen, IInitializable
+    public class ShellViewModel : Screen
     {
-        public ShellViewModel()
+        public ShellViewModel(MainViewModel main, IWindowManager manager, TrayIcon tray)
         {
+            main_ = main;
+            manager_ = manager;
             open_ = false;
-        }
+            tray_ = tray;
 
-        public TrayIcon Icon
-        {
-            get;
-            set;
-        }
+            tray_.ItemClicked += IconItemClicked;
+            tray_.DoubleClicked += IconDoubleClicked;
+            tray_.NotificationClicked += IconNotificationClicked;
 
-        public LibraryRepository Libraries
-        {
-            get;
-            set;
-        }
+            tray_.AddItem(kShow);
+            tray_.AddSeparator();
+            tray_.AddItem(kExit);
 
-        public IMainViewModelFactory MainFactory
-        {
-            get;
-            set;
-        }
-
-        public LibrarySorterRepository Sorters
-        {
-            get;
-            set;
-        }
-
-        public AnimesTask Task
-        {
-            get;
-            set;
-        }
-
-        public IWindowManager WindowManager
-        {
-            get;
-            set;
-        }
-
-        public void Initialize()
-        {
-            foreach (var library in Libraries.Items)
-            {
-                Sorters.Add(library);
-            }
-
-            Icon.ItemClicked += IconItemClicked;
-            Icon.DoubleClicked += IconDoubleClicked;
-            Icon.NotificationClicked += IconNotificationClicked;
-
-            Icon.AddItem(kShow);
-            Icon.AddSeparator();
-            Icon.AddItem(kStart);
-            Icon.AddItem(kStop);
-            Icon.AddSeparator();
-            Icon.AddItem(kExit);
-
-            Icon.Show();
-
-            //Task.Start();
+            tray_.Show();
         }
 
         protected async void Exit()
         {
-            await System.Threading.Tasks.Task.Run(() =>
+            await Task.Run(() =>
             {
-                //Task.Stop();
-                Icon.Hide();
+                tray_.Hide();
                 TryClose();
             });
         }
@@ -93,14 +45,6 @@ namespace MeliMelo.ViewModels
             {
                 case kShow:
                     Show();
-                    break;
-
-                case kStart:
-                    Start();
-                    break;
-
-                case kStop:
-                    Stop();
                     break;
 
                 case kExit:
@@ -123,30 +67,17 @@ namespace MeliMelo.ViewModels
             {
                 open_ = true;
 
-                var window = MainFactory.Create();
-
-                WindowManager.ShowDialog(window);
-
-                MainFactory.Release(window);
+                manager_.ShowDialog(main_);
 
                 open_ = false;
             }
         }
 
-        protected void Start()
-        {
-            //Task.Start();
-        }
-
-        protected void Stop()
-        {
-            //Task.Stop();
-        }
-
-        protected const string kExit = "Exit";
-        protected const string kShow = "Show";
-        protected const string kStart = "Start";
-        protected const string kStop = "Stop";
-        protected bool open_;
+        private const string kExit = "Exit";
+        private const string kShow = "Show";
+        private MainViewModel main_;
+        private IWindowManager manager_;
+        private bool open_;
+        private TrayIcon tray_;
     }
 }

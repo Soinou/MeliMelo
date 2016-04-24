@@ -1,5 +1,4 @@
-﻿using Castle.Core;
-using MeliMelo.Common.Helpers;
+﻿using MeliMelo.Common.Helpers;
 using MeliMelo.Common.Services.Logging;
 using MeliMelo.Common.Utils;
 using MeliMelo.Mangas.Utils;
@@ -14,42 +13,29 @@ namespace MeliMelo.Mangas.Models
     /// <summary>
     /// Mangas task
     /// </summary>
-    public class MangasTask : TimedTask, IInitializable
+    public class MangasTask : TimedTask
     {
         /// <summary>
         /// Creates a new MangaUpdaterImpl
         /// </summary>
-        public MangasTask()
+        public MangasTask(ILogManager manager, MangaParser parser, MangaRepository repository)
         {
             count_ = 0;
             Interval = kNotificationUpdateInterval;
-            parser_ = new MangaParser();
-        }
-
-        public ILogManager LogManager
-        {
-            get;
-            set;
+            log_ = manager.Get("MeliMelo.Mangas");
+            parser_ = parser;
+            repository_ = repository;
         }
 
         /// <summary>
         /// Gets the list of manga
         /// </summary>
-        public ICollection<Manga> Mangas
+        public IEnumerable<Manga> Mangas
         {
             get
             {
-                return Repository.Items;
+                return repository_.Items;
             }
-        }
-
-        /// <summary>
-        /// Manga repository
-        /// </summary>
-        public MangaRepository Repository
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -58,14 +44,8 @@ namespace MeliMelo.Mangas.Models
         /// <param name="manga">Manga to add</param>
         public void Add(Manga manga)
         {
-            Repository.Add(manga);
+            repository_.Add(manga);
             Save();
-        }
-
-        /// <inheritdoc />
-        public void Initialize()
-        {
-            log_ = LogManager.Get("MeliMelo.Mangas");
         }
 
         /// <summary>
@@ -74,10 +54,13 @@ namespace MeliMelo.Mangas.Models
         /// <param name="manga">Manga to remove</param>
         public void Remove(Manga manga)
         {
-            Repository.Remove(manga);
+            repository_.Remove(manga);
             Save();
         }
 
+        /// <summary>
+        /// Run the task
+        /// </summary>
         public override void Run()
         {
             UpdateAll();
@@ -88,7 +71,7 @@ namespace MeliMelo.Mangas.Models
         /// </summary>
         public void Save()
         {
-            Repository.Save();
+            repository_.Save();
         }
 
         /// <summary>
@@ -102,7 +85,7 @@ namespace MeliMelo.Mangas.Models
         /// <summary>
         /// Triggered when at least one manga has received an update
         /// </summary>
-        public event EventHandler<DataEventArgs<uint>> MangaUpdated;
+        public event DataEventHandler<uint> MangaUpdated;
 
         /// <inheritdoc />
         protected override void OnStart()
@@ -119,12 +102,12 @@ namespace MeliMelo.Mangas.Models
         /// Updates all the mangas
         /// </summary>
         /// <param name="force">If we should force to update everything</param>
-        protected async void UpdateAll(bool force = false)
+        private async void UpdateAll(bool force = false)
         {
             uint new_chapters = 0;
             count_ -= kNotificationUpdateInterval;
 
-            foreach (Manga manga in Repository.Items)
+            foreach (Manga manga in repository_.Items)
             {
                 if (count_ <= 0 || force)
                     await UpdateManga(manga);
@@ -133,12 +116,12 @@ namespace MeliMelo.Mangas.Models
             }
 
             if (new_chapters > 0 && MangaUpdated != null)
-                MangaUpdated(this, new DataEventArgs<uint>(new_chapters));
+                MangaUpdated(new_chapters);
 
             if (count_ <= 0)
                 count_ = kFeedUpdateInterval;
 
-            Repository.Save();
+            repository_.Save();
         }
 
         /// <summary>
@@ -146,7 +129,7 @@ namespace MeliMelo.Mangas.Models
         /// </summary>
         /// <param name="manga">Manga to update</param>
         /// <returns>If the manga was updated or not</returns>
-        protected async Task UpdateManga(Manga manga)
+        private async Task UpdateManga(Manga manga)
         {
             try
             {
@@ -167,8 +150,8 @@ namespace MeliMelo.Mangas.Models
                         var description = parser_.ParseDescription(description_item);
                         float? number = parser_.ParseChapterNumber(title_item);
 
-                        // We assume the link never changes (Since we don't have an uuid or
-                        // something like that. Thanks MangaFox)
+                        // We assume the link never changes (Since we don't have an uuid or something
+                        // like that. Thanks MangaFox)
                         var chapter = manga.Chapters.FirstOrDefault(c => c.Link == link_item);
 
                         // Create a new chapter
@@ -207,26 +190,31 @@ namespace MeliMelo.Mangas.Models
         /// <summary>
         /// Interval between two feed updates (15 minutes)
         /// </summary>
-        protected const int kFeedUpdateInterval = 900000;
+        private const int kFeedUpdateInterval = 900000;
 
         /// <summary>
         /// Interval between two notification updates (5 minutes)
         /// </summary>
-        protected const int kNotificationUpdateInterval = 300000;
+        private const int kNotificationUpdateInterval = 300000;
 
         /// <summary>
         /// Count before the next feed update
         /// </summary>
-        protected uint count_;
+        private uint count_;
 
         /// <summary>
         /// Logger
         /// </summary>
-        protected ILog log_;
+        private ILog log_;
 
         /// <summary>
         /// Manga parser (Only parses chapter numbers for now)
         /// </summary>
-        protected MangaParser parser_;
+        private MangaParser parser_;
+
+        /// <summary>
+        /// Manga repository
+        /// </summary>
+        private MangaRepository repository_;
     }
 }
